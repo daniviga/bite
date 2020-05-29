@@ -1,0 +1,6 @@
+pip-review
+pdbpp
+ipython
+flake8
+pyinstrument
+django-debug-toolbar
