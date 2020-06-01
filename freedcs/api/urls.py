@@ -13,15 +13,11 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-
-from django.contrib import admin
-from django.urls import include, path
-
-from api import urls as api_urls
-from telemetry import urls as telemetry_urls
+from django.urls import path
+from api.views import APISubscribe
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include(api_urls)),
-    path('telemetry/', include(telemetry_urls)),
+    path('subscribe/',
+         APISubscribe.as_view({'get': 'list', 'post': 'create'}),
+         name='api_subscribe'),
 ]

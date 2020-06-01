@@ -1,0 +1,11 @@
+{"device": 1,
+ "payload": {
+   "id": "sensor.server.domain",
+   "light": 434,
+   "temperature": {
+     "celsius": 27.02149,
+     "raw": 239,
+     "volts": 0.770215
+   }
+ }
+}
