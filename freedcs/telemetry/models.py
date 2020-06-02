@@ -6,7 +6,7 @@ from api.models import Device
 
 class Telemetry(models.Model):
     device = models.ForeignKey(Device, on_delete=models.CASCADE)
-    time = models.DateTimeField(auto_now_add=True)
+    time = models.DateTimeField(primary_key=True, auto_now_add=True)
     payload = JSONField()
 
     class Meta:
