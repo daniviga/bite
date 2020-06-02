@@ -1,3 +1,4 @@
+#include <EEPROM.h>
 #include <Ethernet.h>
 #include <ArduinoJson.h>
 
@@ -12,53 +13,65 @@ JsonObject payload = doc.createNestedObject("payload");
 JsonObject temp = payload.createNestedObject("temperature");
 
 int tempPin = A0;
-int tempReading;
 int photocellPin = A1;
-int photocellReading;
 
-const byte mac[] = {
-  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-const byte remoteAddr[] = {
-  192, 168, 10, 123 };
-const int remotePort = 8000;
-const int postDelay = 10*1000;
+struct netConfig {
+  IPAddress address;
+  int port;
+};
+netConfig config;
 
-const String serialNum = "abcde12345";
 const String URL = "/telemetry/";
-
-void printAddr(byte addr[], Stream *stream) {
-  for (byte thisByte = 0; thisByte < 4; thisByte++) {
-    // print the value of each byte of the IP address:
-    stream->print(addr[thisByte], DEC);
-    if (thisByte < 3) {
-      stream->print(".");
-    }
-  }
-}
+const int postDelay = 10 * 1000;
 
 void setup(void) {
   Serial.begin(9600);
   
   analogReference(EXTERNAL);
+
+  byte mac[6];
+  char serial[9];
   
+  int eeAddress = 0;
+
+  EEPROM.get(eeAddress, mac);
+  eeAddress += sizeof(mac);
+  EEPROM.get(eeAddress, serial);
+  eeAddress += sizeof(serial);
+  
+  Serial.println("Initialize Ethernet with DHCP:");
   if (Ethernet.begin(mac) == 0) {
     Serial.println("Failed to configure Ethernet using DHCP");
+    if (Ethernet.hardwareStatus() == EthernetNoHardware) {
+      Serial.println("Ethernet shield was not found.  Sorry, can't run without hardware. :(");
+    } else if (Ethernet.linkStatus() == LinkOFF) {
+      Serial.println("Ethernet cable is not connected.");
+    }
     // no point in carrying on, so do nothing forevermore:
-    for(;;)
-      ;
-  } 
+    while (true) {
+      delay(1);
+    }
+  }
+  EEPROM.get(eeAddress, config);
   
-  Serial.print("IoT started at address: ");
-  printAddr(Ethernet.localIP(), &Serial);
+  Serial.print("IoT #");
+  Serial.print(serial);
+  Serial.println(" started at address:");
+  Serial.println(Ethernet.localIP());
   Serial.println();
+  Serial.println("Connecting to:");
+  Serial.print(config.address);
+  Serial.print(":");
+  Serial.println(config.port);
 
-  doc["device"] = 1;  // FIXME
+  doc["device"] = serial;  // FIXME
   payload["id"] = serverName;
 }
 
 void loop(void) {
-  photocellReading = analogRead(photocellPin);
-  tempReading = analogRead(tempPin);
+  
+  int photocellReading = analogRead(photocellPin);
+  int tempReading = analogRead(tempPin);
 
   float tempVoltage = tempReading * AREF_VOLTAGE / 1024.0;
   float tempC = (tempVoltage - 0.5) * 100 ;
@@ -69,14 +82,14 @@ void loop(void) {
   temp["raw"] = tempReading;
   temp["volts"] = tempVoltage;
   
-  if (EthernetClient client = client.connect(remoteAddr, remotePort)) {
+  if (EthernetClient client = client.connect(config.address, config.port)) {
     client.print("POST ");
     client.print(URL);
     client.println(" HTTP/1.1");
     client.print("Host: ");
-    printAddr(remoteAddr, &client);
+    printAddr(config.address, &client);
     client.print(":");
-    client.println(remotePort);
+    client.println(config.port);
     client.println("Content-Type: application/json");
     client.print("Content-Length: ");
     client.println(measureJsonPretty(doc));
