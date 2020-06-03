@@ -22,6 +22,7 @@ int photocellPin = A1;
 
 EthernetUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
+bool NTPValid = false;
 
 struct netConfig {
   IPAddress address;
@@ -71,7 +72,9 @@ void setup(void) {
   timeClient.setPoolServerIP(config.address);
 #endif
   timeClient.begin();
-  timeClient.update();
+  if (timeClient.update()) {
+    NTPValid = true;
+  }
 
 #if DEBUG_TO_SERIAL
   Serial.println("DEBUG: clock updated via NTP.");
@@ -89,7 +92,11 @@ void loop(void) {
   float tempVoltage = tempReading * AREF_VOLTAGE / 1024.0;
   float tempC = (tempVoltage - 0.5) * 100 ;
 
-  json["time"] = timeClient.getEpochTime();
+  if (NTPValid) {
+    json["clock"] = timeClient.getEpochTime();
+  } else {
+    json["clock"] = NULL; // converted into 0
+  }
   payload["light"] = photocellReading;
 
   temp["celsius"] = tempC;

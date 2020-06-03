@@ -11,7 +11,7 @@ class TelemetrySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Telemetry
-        fields = ('device', 'time', 'payload',)
+        fields = ('time', 'device', 'clock', 'payload',)
 
 
 # class WhiteListSerializer(serializers.ModelSerializer):
