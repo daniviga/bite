@@ -9,11 +9,10 @@
 #define AREF_VOLTAGE 3.3
 
 // const String serverName = "sensor.server.domain";
+const size_t capacity = 2 * JSON_OBJECT_SIZE(3) + JSON_OBJECT_SIZE(2) + 20;
 
-const size_t capacity = JSON_OBJECT_SIZE(2) + 2 * JSON_OBJECT_SIZE(3) + 110;
-
-DynamicJsonDocument json(capacity);
-JsonObject payload = json.createNestedObject("payload");
+DynamicJsonDocument telemetry(capacity);
+JsonObject payload = telemetry.createNestedObject("payload");
 JsonObject temp = payload.createNestedObject("temperature");
 
 unsigned int counter = 0;
@@ -30,13 +29,16 @@ struct netConfig {
 };
 netConfig config;
 
-const String URL = "/telemetry/";
+const String apiURL = "/api/subscribe/";
+const String telemetryURL = "/telemetry/";
 const int postDelay = 10 * 1000;
 
 void setup(void) {
   Serial.begin(9600);
 
   analogReference(EXTERNAL);
+
+  StaticJsonDocument<20> api;
 
   byte mac[6];
   char serial[9];
@@ -80,7 +82,10 @@ void setup(void) {
   Serial.println("DEBUG: clock updated via NTP.");
 #endif
 
-  json["device"] = serial;
+  api["serial"] = serial;
+  postData(config, apiURL, api);
+
+  telemetry["device"] = serial;
   // payload["id"] = serverName;
 }
 
@@ -93,9 +98,9 @@ void loop(void) {
   float tempC = (tempVoltage - 0.5) * 100 ;
 
   if (NTPValid) {
-    json["clock"] = timeClient.getEpochTime();
+    telemetry["clock"] = timeClient.getEpochTime();
   } else {
-    json["clock"] = NULL; // converted into 0
+    telemetry["clock"] = NULL; // converted into 0
   }
   payload["light"] = photocellReading;
 
@@ -103,14 +108,30 @@ void loop(void) {
   temp["raw"] = tempReading;
   temp["volts"] = tempVoltage;
 
-  if (EthernetClient client = client.connect(config.address, config.port)) {
+  postData(config, telemetryURL, telemetry);
+
+  if (counter == 6 * 120) { // Update clock every 6 times * 10 sec * 120 minutes = 2 hrs
+    timeClient.update();
+    counter = 0;
+#if DEBUG_TO_SERIAL
+    Serial.println("DEBUG: clock updated via NTP.");
+#endif
+  } else {
+    counter++;
+  }
+
+  delay(postDelay);
+}
+
+void postData(const netConfig &postAPI, const String &URL, const DynamicJsonDocument &json) {
+  if (EthernetClient client = client.connect(postAPI.address, postAPI.port)) {
     client.print("POST ");
     client.print(URL);
     client.println(" HTTP/1.1");
     client.print("Host: ");
-    client.print(config.address);
+    client.print(postAPI.address);
     client.print(":");
-    client.println(config.port);
+    client.println(postAPI.port);
     client.println("Content-Type: application/json");
     client.print("Content-Length: ");
     client.println(measureJsonPretty(json));
@@ -125,16 +146,4 @@ void loop(void) {
     Serial.println("\n<<<");
 #endif
   }
-
-  if (counter == 6 * 120) { // Update clock every 6 times * 10 sec * 120 minutes = 2 hrs
-    timeClient.update();
-    counter = 0;
-#if DEBUG_TO_SERIAL
-    Serial.println("DEBUG: clock updated via NTP.");
-#endif
-  } else {
-    counter++;
-  }
-
-  delay(postDelay);
 }
