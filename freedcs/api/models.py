@@ -3,8 +3,16 @@ from django.core.exceptions import ValidationError
 
 
 def device_validation(value):
-    published_devices = WhiteList.objects.filter(serial=value,
-                                                 is_published=True)
+    if value.startswith('ZZ'):  # simulated devices
+        published_devices = WhiteList.objects.filter(
+            serial='ZZ%',
+            is_published=True
+        )
+    else:
+        published_devices = WhiteList.objects.filter(
+            serial=value,
+            is_published=True
+        )
     if not published_devices:
         raise ValidationError("Device is not published")
 
