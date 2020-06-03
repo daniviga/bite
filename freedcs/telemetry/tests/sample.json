@@ -1,4 +1,5 @@
-{"device": 1,
+{"device": "abcde1234",
+ "clock": 1591194712,
  "payload": {
    "id": "sensor.server.domain",
    "light": 434,

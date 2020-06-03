@@ -80,7 +80,7 @@ void setup(void) {
   Serial.println("DEBUG: clock updated via NTP.");
 #endif
 
-  json["device"] = 1;  // FIXME
+  json["device"] = serial;
   // payload["id"] = serverName;
 }
 

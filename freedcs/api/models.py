@@ -1,18 +1,16 @@
 from django.db import models
+from django.conf import settings
 from django.core.exceptions import ValidationError
 
 
 def device_validation(value):
-    if value.startswith('ZZ'):  # simulated devices
-        published_devices = WhiteList.objects.filter(
-            serial='ZZ%',
-            is_published=True
-        )
-    else:
-        published_devices = WhiteList.objects.filter(
-            serial=value,
-            is_published=True
-        )
+    if settings.SKIP_WHITELIST and settings.DEBUG:
+        return  # skip validation in debug mode when SKIP_WHITELIST is True
+
+    published_devices = WhiteList.objects.filter(
+        serial=value,
+        is_published=True
+    )
     if not published_devices:
         raise ValidationError("Device is not published")
 
