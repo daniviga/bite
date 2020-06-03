@@ -5,6 +5,8 @@ from api.models import Device, WhiteList
 @admin.register(Device)
 class DeviceAdmin(admin.ModelAdmin):
     readonly_fields = ('creation_time', 'updated_time',)
+    list_filter = ('serial',)
+    search_fields = ('serial',)
 
     fieldsets = (
         (None, {
@@ -20,6 +22,8 @@ class DeviceAdmin(admin.ModelAdmin):
 @admin.register(WhiteList)
 class WhiteListAdmin(admin.ModelAdmin):
     readonly_fields = ('creation_time', 'updated_time',)
+    list_filter = ('serial',)
+    search_fields = ('serial',)
 
     fieldsets = (
         (None, {

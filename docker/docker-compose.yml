@@ -11,6 +11,14 @@ x-op-service-default: &service_default
   init: true
 
 services:
+  ntpd:
+    <<: *service_default
+    image: daniviga/ntpd
+    networks:
+      - net
+    ports:
+      - "127.0.0.1:123:123/udp"
+
   timescale:
     <<: *service_default
     image: timescale/timescaledb:latest-pg12
