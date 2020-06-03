@@ -44,3 +44,14 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
+
+  edge:
+    <<: *service_default
+    image: docker:dind
+    privileged: true
+    environment:
+      DOCKER_TLS_CERTDIR:
+    networks:
+      - net
+    ports:
+      - "127.0.0.1:22375:2375"

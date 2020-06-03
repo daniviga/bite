@@ -1,0 +1,19 @@
+version: "3.7"
+
+networks:
+  localnet:
+
+x-op-service-default: &service_default
+  restart: unless-stopped
+  init: true
+
+services:
+  device-http:
+    <<: *service_default
+    image: daniviga/freedcs-device-http
+    environment:
+      IOT_HOST: "http://192.168.10.123:8000"
+      # IOT_SERIAL: "abcd1234"
+      # IOT_DELAY: 10
+    networks:
+      - localnet
