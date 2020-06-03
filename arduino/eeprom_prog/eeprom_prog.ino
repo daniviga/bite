@@ -9,7 +9,7 @@ const char serial[] = "abcd1234";
 
 struct netConfig {
   IPAddress address;
-  int port;
+  unsigned int port;
 };
 
 netConfig config = {
