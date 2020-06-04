@@ -8,15 +8,20 @@ import datetime
 import urllib3
 from time import sleep
 
+DEBUG = bool(os.environ.get('IOT_DEBUG', False))
 http = urllib3.PoolManager()
 
 
 def post_json(host, url, data):
-    encoded_data = json.dumps(data).encode('utf8')
+    json_data = json.dumps(data)
+
+    if DEBUG:
+        print(json_data)
+
+    encoded_data = json_data.encode('utf8')
 
     while True:
         try:
-            retry = False
             r = http.request(
                 'POST',
                 host + url,
@@ -45,7 +50,11 @@ def main():
         'device': serial,
         'clock': int(datetime.datetime.now().timestamp()),
         'payload': {
-            'data': 'sample_data'
+            'id': 'device_http_simulator',
+            'light': random.randint(300, 500),
+            "temperature": {
+                "celsius": random.uniform(20, 28)
+            }
         }
     }
 
