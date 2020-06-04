@@ -1,0 +1,9 @@
+[submodule "arduino/libraries/ArduinoJson"]
+	path = arduino/libraries/ArduinoJson
+	url = git@github.com:daniviga/ArduinoJson.git
+[submodule "arduino/libraries/Ethernet"]
+	path = arduino/libraries/Ethernet
+	url = git@github.com:daniviga/Ethernet.git
+[submodule "arduino/libraries/NTPClient"]
+	path = arduino/libraries/NTPClient
+	url = git@github.com:daniviga/NTPClient.git
