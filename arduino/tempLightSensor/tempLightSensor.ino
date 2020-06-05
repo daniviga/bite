@@ -16,8 +16,7 @@ JsonObject payload = telemetry.createNestedObject("payload");
 JsonObject temp = payload.createNestedObject("temperature");
 
 unsigned int counter = 0;
-int tempPin = A0;
-int photocellPin = A1;
+
 
 EthernetUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
@@ -29,9 +28,8 @@ struct netConfig {
 };
 netConfig config;
 
-const String apiURL = "/api/subscribe/";
+const String apiURL = "/api/device/subscribe/";
 const String telemetryURL = "/telemetry/";
-const int postDelay = 10 * 1000;
 
 void setup(void) {
   Serial.begin(9600);
@@ -90,9 +88,10 @@ void setup(void) {
 }
 
 void loop(void) {
+  const int postDelay = 10 * 1000;
 
-  unsigned int photocellReading = analogRead(photocellPin);
-  unsigned int tempReading = analogRead(tempPin);
+  unsigned int tempReading = analogRead(A0);
+  unsigned int photocellReading = analogRead(A1);
 
   float tempVoltage = tempReading * AREF_VOLTAGE / 1024.0;
   float tempC = (tempVoltage - 0.5) * 100 ;
