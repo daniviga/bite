@@ -17,7 +17,10 @@ from django.urls import path
 from api.views import APISubscribe
 
 urlpatterns = [
-    path('subscribe/',
-         APISubscribe.as_view({'get': 'list', 'post': 'create'}),
-         name='api_subscribe'),
+    path('device/subscribe/',
+         APISubscribe.as_view({'post': 'create'}),
+         name='device-subscribe'),
+    path('device/list/',
+         APISubscribe.as_view({'get': 'list'}),
+         name='device-list'),
 ]

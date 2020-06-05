@@ -31,10 +31,12 @@ def post_json(host, url, data):
         except urllib3.exceptions.MaxRetryError:
             pass
 
+        sleep(10)  # retry in 10 seconds
+
 
 def main():
     host = os.environ.get('IOT_HOST', 'http://127.0.0.1:8000')
-    subscribe = '/api/subscribe/'
+    subscribe = '/api/device/subscribe/'
     telemetry = '/telemetry/'
     delay = int(os.environ.get('IOT_DELAY', 10))
 
@@ -49,17 +51,16 @@ def main():
     data = {
         'device': serial,
         'clock': int(datetime.datetime.now().timestamp()),
-        'payload': {
-            'id': 'device_http_simulator',
-            'light': random.randint(300, 500),
-            "temperature": {
-                "celsius": random.uniform(20, 28)
-            }
-        }
     }
 
     while True:
-        post_json(host, telemetry, data)
+        payload = {
+            'id': 'device_http_simulator',
+            'light': random.randint(300, 500),
+            'temperature': {
+                'celsius': round(random.uniform(20, 28), 1)}
+        }
+        post_json(host, telemetry, {**data, 'payload': payload})
         sleep(delay)
 
 

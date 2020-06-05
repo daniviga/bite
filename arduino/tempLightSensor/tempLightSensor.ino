@@ -29,7 +29,7 @@ struct netConfig {
 };
 netConfig config;
 
-const String apiURL = "/api/subscribe/";
+const String apiURL = "/api/device/subscribe/";
 const String telemetryURL = "/telemetry/";
 const int postDelay = 10 * 1000;
 

@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -31,6 +33,8 @@ class WhiteList(models.Model):
 class Device(models.Model):
     serial = models.CharField(max_length=128, unique=True,
                               validators=[device_validation])
+    uuid = models.UUIDField(unique=True, default=uuid.uuid4,
+                            editable=False)
     creation_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
 
