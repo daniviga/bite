@@ -6,16 +6,17 @@ networks:
 x-op-service-default: &service_default
   restart: always
   init: true
+  tty: true
 
 services:
   device-http:
     <<: *service_default
     build:
-      context: ../simulators
-      dockerfile: Dockerfile.http
-    image: daniviga/freedcs-device-http
+      context: ../simulator
+      dockerfile: Dockerfile
+    image: daniviga/freedcs-device-simulator
     environment:
-      IOT_HOST: "http://192.168.10.123:8000"
+      IOT_HTTP: "http://192.168.10.123:8000"
       # IOT_SERIAL: "abcd1234"
       # IOT_DELAY: 10
       IOT_DEBUG: 1
@@ -25,14 +26,15 @@ services:
   device-mqtt:
     <<: *service_default
     build:
-      context: ../simulators
-      dockerfile: Dockerfile.mqtt
-    image: daniviga/freedcs-device-mqtt
+      context: ../simulator
+      dockerfile: Dockerfile
+    image: daniviga/freedcs-device-simulator
     environment:
-      IOT_HOST: "http://192.168.10.123:8000"
-      IOT_MQTT_HOST: "192.168.10.123:1883"
+      IOT_HTTP: "http://192.168.10.123:8000"
+      IOT_MQTT: "192.168.10.123:1883"
       # IOT_SERIAL: "abcd1234"
       # IOT_DELAY: 10
       IOT_DEBUG: 1
+    command: ["/opt/freedcs/device_simulator.py", "-t", "mqtt"]
     networks:
       - localnet

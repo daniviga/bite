@@ -1,6 +1,0 @@
-FROM python:3.8-alpine
-
-RUN pip3 install urllib3
-COPY ./simulator_http.py /opt/freedcs/simulator_http.py
-
-ENTRYPOINT ["python3", "/opt/freedcs/simulator_http.py"]
