@@ -7,7 +7,7 @@ volumes:
   pgdata:
 
 x-op-service-default: &service_default
-  restart: unless-stopped
+  restart: always  # unless-stopped
   init: true
 
 services:
@@ -44,15 +44,15 @@ services:
   #     - net
   #   ports:
   #     - "1883:1883"
-  #     - "9001:9001"
+  #   #  - "9001:9001"  # mqtt via websocket
 
   rabbitmq:
     <<: *service_default
     image: rabbitmq:3-management-alpine
-    environment:
-      # RABBITMQ_DEFAULT_VHOST: "freedcs"
-      RABBITMQ_DEFAULT_USER: "freedcs"
-      RABBITMQ_DEFAULT_PASS: "password"
+    # environment:  # we use unauth access atm
+    #   RABBITMQ_DEFAULT_VHOST: "freedcs"
+    #   RABBITMQ_DEFAULT_USER: "freedcs"
+    #   RABBITMQ_DEFAULT_PASS: "password"
     volumes:
       - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
     networks:

@@ -1,0 +1,6 @@
+FROM python:3.8-alpine
+
+RUN pip3 install paho-mqtt urllib3 
+COPY ./simulator_mqtt.py /opt/freedcs/simulator_mqtt.py
+
+ENTRYPOINT ["python3", "/opt/freedcs/simulator_mqtt.py"]
