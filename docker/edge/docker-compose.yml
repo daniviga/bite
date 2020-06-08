@@ -4,17 +4,35 @@ networks:
   localnet:
 
 x-op-service-default: &service_default
-  restart: unless-stopped
+  restart: always
   init: true
+  tty: true
 
 services:
   device-http:
     <<: *service_default
-    image: daniviga/freedcs-device-http
+    build:
+      context: ../simulator
+    image: daniviga/freedcs-device-simulator
     environment:
-      IOT_HOST: "http://192.168.10.123:8000"
+      IOT_HTTP: "http://192.168.10.123:8000"
       # IOT_SERIAL: "abcd1234"
       # IOT_DELAY: 10
       IOT_DEBUG: 1
+    networks:
+      - localnet
+
+  device-mqtt:
+    <<: *service_default
+    build:
+      context: ../simulator
+    image: daniviga/freedcs-device-simulator
+    environment:
+      IOT_HTTP: "http://192.168.10.123:8000"
+      IOT_MQTT: "192.168.10.123:1883"
+      # IOT_SERIAL: "abcd1234"
+      # IOT_DELAY: 10
+      IOT_DEBUG: 1
+    command: ["/opt/freedcs/device_simulator.py", "-t", "mqtt"]
     networks:
       - localnet

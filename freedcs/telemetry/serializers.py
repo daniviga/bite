@@ -11,4 +11,10 @@ class TelemetrySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Telemetry
-        fields = ('time', 'device', 'clock', 'payload',)
+        fields = ('time', 'device', 'clock', 'transport', 'payload',)
+        read_only_fields = ['transport']
+
+    def create(self, validated_data):
+        validated_data['transport'] = 'http'
+        telemetry = Telemetry.objects.create(**validated_data)
+        return telemetry

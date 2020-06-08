@@ -1,12 +1,16 @@
 #include <EEPROM.h>
 #include <Ethernet.h>
 #include <EthernetUdp.h>
+#include <PubSubClient.h>
 #include <NTPClient.h>
 #include <ArduinoJson.h>
 
-#define DEBUG_TO_SERIAL 1
+#define DEBUG_TO_SERIAL 1  // debug on serial port
+#define USE_MQTT 0         // use mqtt protocol instead of http post
 #define USE_INTERNAL_NTP 0 // use default ntp server or the internal one
-#define AREF_VOLTAGE 3.3
+#define AREF_VOLTAGE 3.3   // set aref voltage to 3.3v instead of default 5v
+
+char serial[9];
 
 // const String serverName = "sensor.server.domain";
 const size_t capacity = 2 * JSON_OBJECT_SIZE(3) + JSON_OBJECT_SIZE(2) + 20;
@@ -17,10 +21,12 @@ JsonObject temp = payload.createNestedObject("temperature");
 
 unsigned int counter = 0;
 
-
 EthernetUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
 bool NTPValid = false;
+
+EthernetClient ethClient;
+PubSubClient clientMQTT(ethClient);
 
 struct netConfig {
   IPAddress address;
@@ -39,8 +45,6 @@ void setup(void) {
   StaticJsonDocument<20> api;
 
   byte mac[6];
-  char serial[9];
-
   int eeAddress = 0;
 
   EEPROM.get(eeAddress, mac);
@@ -60,10 +64,10 @@ void setup(void) {
 
   Serial.print("IoT #");
   Serial.print(serial);
-  Serial.println(" at address:");
+  Serial.print(" at address: ");
   Serial.println(Ethernet.localIP());
   Serial.println();
-  Serial.println("Connecting to:");
+  Serial.print("Connecting to: ");
   Serial.print(config.address);
   Serial.print(":");
   Serial.println(config.port);
@@ -85,6 +89,10 @@ void setup(void) {
 
   telemetry["device"] = serial;
   // payload["id"] = serverName;
+
+#if USE_MQTT
+  clientMQTT.setServer(config.address, 1883);
+#endif
 }
 
 void loop(void) {
@@ -107,7 +115,11 @@ void loop(void) {
   temp["raw"] = tempReading;
   temp["volts"] = tempVoltage;
 
+#if USE_MQTT
+  publishData(config, telemetry);
+#else
   postData(config, telemetryURL, telemetry);
+#endif
 
   if (counter == 6 * 120) { // Update clock every 6 times * 10 sec * 120 minutes = 2 hrs
     timeClient.update();
@@ -121,6 +133,22 @@ void loop(void) {
 
   delay(postDelay);
 }
+
+#if USE_MQTT
+void publishData(const netConfig &mqtt, const DynamicJsonDocument &json) {
+  if (clientMQTT.connect(serial, "freedcs", "password")) {
+    char buffer[256];
+    serializeJson(json, buffer);
+    clientMQTT.publish(serial, buffer);
+
+#if DEBUG_TO_SERIAL
+    Serial.println("DEBUG: MQTT PUBLISH>>>");
+    serializeJsonPretty(json, Serial);
+    Serial.println("\n<<<");
+#endif
+  }
+}
+#endif
 
 void postData(const netConfig &postAPI, const String &URL, const DynamicJsonDocument &json) {
   if (EthernetClient client = client.connect(postAPI.address, postAPI.port)) {
@@ -140,7 +168,7 @@ void postData(const netConfig &postAPI, const String &URL, const DynamicJsonDocu
     client.stop();
 
 #if DEBUG_TO_SERIAL
-    Serial.println("DEBUG: >>>");
+    Serial.println("DEBUG: HTTP POST>>>");
     serializeJsonPretty(json, Serial);
     Serial.println("\n<<<");
 #endif

@@ -7,12 +7,14 @@ volumes:
   pgdata:
 
 x-op-service-default: &service_default
-  restart: unless-stopped
+  restart: always  # unless-stopped
   init: true
 
 services:
   ntpd:
     <<: *service_default
+    build:
+      context: ./ntpd
     image: daniviga/ntpd
     networks:
       - net
@@ -32,18 +34,35 @@ services:
     ports:
       - "127.0.0.1:5432:5432"
 
+  # mosquitto simple deployment
+  # mqtt:
+  #   <<: *service_default
+  #   # image: vernemq/vernemq
+  #   # environment:
+  #   #   DOCKER_VERNEMQ_ALLOW_ANONYMOUS: "on"
+  #   #   DOCKER_VERNEMQ_ACCEPT_EULA: "yes"
+  #   image: eclipse-mosquitto
+  #   networks:
+  #     - net
+  #   ports:
+  #     - "1883:1883"
+  #   #  - "9001:9001"  # mqtt via websocket
+
   rabbitmq:
     <<: *service_default
-    image: rabbitmq:3-management
-    environment:
-      RABBITMQ_DEFAULT_VHOST: "freedcs"
-      RABBITMQ_DEFAULT_USER: "freedcs"
-      RABBITMQ_DEFAULT_PASS: "password"
+    image: rabbitmq:3-management-alpine
+    # environment:  # we use unauth access atm
+    #   RABBITMQ_DEFAULT_VHOST: "freedcs"
+    #   RABBITMQ_DEFAULT_USER: "freedcs"
+    #   RABBITMQ_DEFAULT_PASS: "password"
+    volumes:
+      - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
     networks:
       - net
     ports:
-      - "15672:15672"
+      - "1883:1883"
       - "5672:5672"
+      - "15672:15672"
 
   edge:
     <<: *service_default
