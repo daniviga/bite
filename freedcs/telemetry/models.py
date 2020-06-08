@@ -8,6 +8,9 @@ from api.models import Device
 class Telemetry(models.Model):
     device = models.ForeignKey(Device, on_delete=models.CASCADE)
     time = models.DateTimeField(primary_key=True, auto_now_add=True)
+    transport = models.CharField(max_length=4,
+                                 choices=[('http', 'http'), ('mqtt', 'mqtt')],
+                                 default='http')
     clock = models.IntegerField(
         validators=[MinValueValidator(0)],
         null=True)
