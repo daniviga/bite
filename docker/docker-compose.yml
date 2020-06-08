@@ -13,6 +13,8 @@ x-op-service-default: &service_default
 services:
   ntpd:
     <<: *service_default
+    build:
+      context: ./ntpd
     image: daniviga/ntpd
     networks:
       - net
