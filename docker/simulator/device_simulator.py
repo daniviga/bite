@@ -90,12 +90,11 @@ def main():
     data = {'serial': args.serial}
     post_json(args.endpoint, subscribe, data)
 
-    data = {
-        'device': args.serial,
-        'clock': int(datetime.datetime.now().timestamp()),
-    }
-
     while True:
+        data = {
+            'device': args.serial,
+            'clock': int(datetime.datetime.now().timestamp()),
+        }
         payload = {
             'id': 'device_simulator',
             'light': random.randint(300, 500),
