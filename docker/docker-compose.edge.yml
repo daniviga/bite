@@ -1,0 +1,12 @@
+version: "3.7"
+
+edge-host:
+  <<: *service_default
+  image: docker:dind
+  privileged: true
+  environment:
+    DOCKER_TLS_CERTDIR:
+  # networks:
+  #   - net
+  ports:
+    - "127.0.0.1:22375:2375"

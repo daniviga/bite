@@ -47,17 +47,6 @@ services:
       - "1883:1883"
       - "15672:15672"
 
-  # edge:
-  #   <<: *service_default
-  #   image: docker:dind
-  #   privileged: true
-  #   environment:
-  #     DOCKER_TLS_CERTDIR:
-  #   networks:
-  #     - net
-  #   ports:
-  #     - "127.0.0.1:22375:2375"
-
   ingress:
     image: traefik:v2.2
     command: --api.insecure=true --providers.docker
@@ -82,6 +71,7 @@ services:
     networks:
       - net
     depends_on:
+      - ingress
       - data-migration
       - timescale
     labels:
