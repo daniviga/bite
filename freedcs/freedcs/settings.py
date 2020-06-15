@@ -82,7 +82,7 @@ DATABASES = {
         'NAME': 'freedcs',
         'USER': 'freedcs',
         'PASSWORD': 'password',
-        'HOST': '127.0.0.1',
+        'HOST': 'timescale',
         'PORT': '5432',
     }
 }
@@ -127,3 +127,17 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 SKIP_WHITELIST = True
+
+MQTT_BROKER = {
+    'HOST': 'rabbitmq',
+    'PORT': '1883',
+}
+
+# If no local_settings.py is availble in the current folder let's try to
+# load it from the application root
+try:
+    from freedcs.production import *
+except ImportError:
+    # If a local_setting.py does not exist
+    # settings in this file only will be used
+    pass

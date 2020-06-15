@@ -1,0 +1,27 @@
+from freedcs import settings
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'i4z%50+4b4ek(l0#!w2-r1hpo%&r6tk7p$p_-(=6d!c9n=g5m&'
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
+ALLOWED_HOSTS = ['*']
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'freedcs',
+        'USER': 'freedcs',
+        'PASSWORD': 'password',
+        'HOST': 'timescale',
+        'PORT': '5432',
+    }
+}
+
+MQTT_BROKER = {
+    'HOST': 'rabbitmq',
+    'PORT': '1883',
+}
+
+SKIP_WHITELIST = True

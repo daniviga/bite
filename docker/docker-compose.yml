@@ -19,7 +19,7 @@ services:
     networks:
       - net
     ports:
-      - "127.0.0.1:123:123/udp"
+      - "123:123/udp"
 
   timescale:
     <<: *service_default
@@ -34,20 +34,6 @@ services:
     ports:
       - "127.0.0.1:5432:5432"
 
-  # mosquitto simple deployment
-  # mqtt:
-  #   <<: *service_default
-  #   # image: vernemq/vernemq
-  #   # environment:
-  #   #   DOCKER_VERNEMQ_ALLOW_ANONYMOUS: "on"
-  #   #   DOCKER_VERNEMQ_ACCEPT_EULA: "yes"
-  #   image: eclipse-mosquitto
-  #   networks:
-  #     - net
-  #   ports:
-  #     - "1883:1883"
-  #   #  - "9001:9001"  # mqtt via websocket
-
   rabbitmq:
     <<: *service_default
     image: rabbitmq:3-management-alpine
@@ -61,16 +47,56 @@ services:
       - net
     ports:
       - "1883:1883"
-      - "5672:5672"
       - "15672:15672"
 
-  edge:
+  # edge:
+  #   <<: *service_default
+  #   image: docker:dind
+  #   privileged: true
+  #   environment:
+  #     DOCKER_TLS_CERTDIR:
+  #   networks:
+  #     - net
+  #   ports:
+  #     - "127.0.0.1:22375:2375"
+
+  freedcs:
     <<: *service_default
-    image: docker:dind
-    privileged: true
-    environment:
-      DOCKER_TLS_CERTDIR:
+    build:
+      context: ..
+      dockerfile: ./docker/django/Dockerfile
+    image: daniviga/freedcs
+    volumes:
+      - "../freedcs:/srv/freedcs"
+      - "./django/production.py.sample:/srv/freedcs/freedcs/production.py"
+    command: ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
     networks:
       - net
     ports:
-      - "127.0.0.1:22375:2375"
+      - "8000:8000"
+    depends_on:
+      - data-migration
+      - timescale
+
+  data-migration:
+    image: daniviga/freedcs
+    volumes:
+      - "../freedcs:/srv/freedcs"
+      - "./django/production.py.sample:/srv/freedcs/freedcs/production.py"
+    command: ["python3", "manage.py", "migrate", "--noinput"]
+    networks:
+      - net
+
+  mqtt-to-db:
+    <<: *service_default
+    image: daniviga/freedcs
+    volumes:
+      - "../freedcs:/srv/freedcs"
+      - "./django/production.py.sample:/srv/freedcs/freedcs/production.py"
+    command: ["python3", "manage.py", "mqtt-to-db"]
+    networks:
+      - net
+    depends_on:
+      - data-migration
+      - timescale
+      - rabbitmq
