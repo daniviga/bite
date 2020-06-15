@@ -31,8 +31,6 @@ services:
       - "pgdata:/var/lib/postgresql/data"
     networks:
       - net
-    ports:
-      - "127.0.0.1:5432:5432"
 
   rabbitmq:
     <<: *service_default
@@ -60,6 +58,18 @@ services:
   #   ports:
   #     - "127.0.0.1:22375:2375"
 
+  ingress:
+    image: traefik:v2.2
+    command: --api.insecure=true --providers.docker
+    ports:
+      - "8000:80"
+      - "8080:8080"
+    networks:
+      - net
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+
   freedcs:
     <<: *service_default
     build:
@@ -68,21 +78,19 @@ services:
     image: daniviga/freedcs
     volumes:
       - "../freedcs:/srv/freedcs"
-      - "./django/production.py.sample:/srv/freedcs/freedcs/production.py"
     command: ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
     networks:
       - net
-    ports:
-      - "8000:8000"
     depends_on:
       - data-migration
       - timescale
+    labels:
+      - "traefik.http.routers.freedcs.rule=PathPrefix(`/`)"
 
   data-migration:
     image: daniviga/freedcs
     volumes:
       - "../freedcs:/srv/freedcs"
-      - "./django/production.py.sample:/srv/freedcs/freedcs/production.py"
     command: ["python3", "manage.py", "migrate", "--noinput"]
     networks:
       - net
@@ -92,7 +100,6 @@ services:
     image: daniviga/freedcs
     volumes:
       - "../freedcs:/srv/freedcs"
-      - "./django/production.py.sample:/srv/freedcs/freedcs/production.py"
     command: ["python3", "manage.py", "mqtt-to-db"]
     networks:
       - net

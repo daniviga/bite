@@ -17,4 +17,5 @@ RUN pip3 install -r /tmp/requirements.txt && rm /tmp/requirements.txt
 
 USER 1000:1000
 WORKDIR /srv/app/freedcs
+EXPOSE 8000/tcp
 CMD ["python3", "manage.py", "runserver"]
