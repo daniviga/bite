@@ -1,0 +1,20 @@
+version: "3.7"
+
+services:
+  ingress:
+    command: --providers.docker
+    ports:
+      - "80:80"
+
+  freedcs:
+    volumes:
+      - "./django/production.py.sample:/srv/freedcs/freedcs/production.py"
+    command: ["gunicorn", "-b", "0.0.0.0:8000", "freedcs.wsgi:application"]
+
+  data-migration:
+    volumes:
+      - "./django/production.py.sample:/srv/freedcs/freedcs/production.py"
+
+  mqtt-to-db:
+    volumes:
+      - "./django/production.py.sample:/srv/freedcs/freedcs/production.py"
