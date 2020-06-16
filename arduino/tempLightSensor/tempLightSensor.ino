@@ -6,7 +6,7 @@
 #include <ArduinoJson.h>
 
 #define DEBUG_TO_SERIAL 1  // debug on serial port
-#define USE_MQTT 0         // use mqtt protocol instead of http post
+#define USE_MQTT 1         // use mqtt protocol instead of http post
 #define USE_INTERNAL_NTP 0 // use default ntp server or the internal one
 #define AREF_VOLTAGE 3.3   // set aref voltage to 3.3v instead of default 5v
 
@@ -136,7 +136,7 @@ void loop(void) {
 
 #if USE_MQTT
 void publishData(const netConfig &mqtt, const DynamicJsonDocument &json) {
-  if (clientMQTT.connect(serial, "freedcs", "password")) {
+  if (clientMQTT.connect(serial)) {
     char buffer[256];
     serializeJson(json, buffer);
     clientMQTT.publish(serial, buffer);
@@ -151,21 +151,21 @@ void publishData(const netConfig &mqtt, const DynamicJsonDocument &json) {
 #endif
 
 void postData(const netConfig &postAPI, const String &URL, const DynamicJsonDocument &json) {
-  if (EthernetClient client = client.connect(postAPI.address, postAPI.port)) {
-    client.print("POST ");
-    client.print(URL);
-    client.println(" HTTP/1.1");
-    client.print("Host: ");
-    client.print(postAPI.address);
-    client.print(":");
-    client.println(postAPI.port);
-    client.println("Content-Type: application/json");
-    client.print("Content-Length: ");
-    client.println(measureJsonPretty(json));
-    client.println("Connection: close");
-    client.println();
-    serializeJson(json, client);
-    client.stop();
+  if (ethClient.connect(postAPI.address, postAPI.port)) {
+    ethClient.print("POST ");
+    ethClient.print(URL);
+    ethClient.println(" HTTP/1.1");
+    ethClient.print("Host: ");
+    ethClient.print(postAPI.address);
+    ethClient.print(":");
+    ethClient.println(postAPI.port);
+    ethClient.println("Content-Type: application/json");
+    ethClient.print("Content-Length: ");
+    ethClient.println(measureJsonPretty(json));
+    ethClient.println("Connection: close");
+    ethClient.println();
+    serializeJson(json, ethClient);
+    ethClient.stop();
 
 #if DEBUG_TO_SERIAL
     Serial.println("DEBUG: HTTP POST>>>");
