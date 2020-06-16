@@ -32,7 +32,8 @@ class Command(BaseCommand):
 
     async def mqtt_broker(self):
         async with Client(MQTT_HOST, port=MQTT_PORT) as client:
-            await client.subscribe("#")
+            # use shared subscription for HA/balancing
+            await client.subscribe("$share/telemetry/#")
             async with client.unfiltered_messages() as messages:
                 async for message in messages:
                     payload = json.loads(message.payload.decode('utf-8'))
