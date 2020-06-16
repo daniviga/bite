@@ -32,22 +32,16 @@ services:
     networks:
       - net
 
-  rabbitmq:
+  broker:
     <<: *service_default
-    image: rabbitmq:3-management-alpine
-    # environment:  # we use unauth access atm
-    #   RABBITMQ_DEFAULT_VHOST: "freedcs"
-    #   RABBITMQ_DEFAULT_USER: "freedcs"
-    #   RABBITMQ_DEFAULT_PASS: "password"
-    volumes:
-      - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+    image: eclipse-mosquitto
     networks:
       - net
     ports:
       - "1883:1883"
-      - "15672:15672"
 
   ingress:
+    <<: *service_default
     image: traefik:v2.2
     command: --api.insecure=true --providers.docker
     ports:
@@ -66,7 +60,7 @@ services:
       dockerfile: ./docker/django/Dockerfile
     image: daniviga/freedcs
     volumes:
-      - "../freedcs:/srv/freedcs"
+      - "../freedcs:/srv/app/freedcs"
     command: ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
     networks:
       - net
@@ -80,7 +74,7 @@ services:
   data-migration:
     image: daniviga/freedcs
     volumes:
-      - "../freedcs:/srv/freedcs"
+      - "../freedcs:/srv/app/freedcs"
     command: ["python3", "manage.py", "migrate", "--noinput"]
     networks:
       - net
@@ -89,11 +83,11 @@ services:
     <<: *service_default
     image: daniviga/freedcs
     volumes:
-      - "../freedcs:/srv/freedcs"
+      - "../freedcs:/srv/app/freedcs"
     command: ["python3", "manage.py", "mqtt-to-db"]
     networks:
       - net
     depends_on:
       - data-migration
       - timescale
-      - rabbitmq
+      - broker

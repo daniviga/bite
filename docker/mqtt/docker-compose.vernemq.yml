@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  broker:
+    image: vernemq/vernemq
+    environment:
+      DOCKER_VERNEMQ_ALLOW_ANONYMOUS: "on"
+      DOCKER_VERNEMQ_ACCEPT_EULA: "yes"
+    networks:
+      - net
+    ports:
+      - "1883:1883"
+    init: true
+    restart: always

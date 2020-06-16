@@ -42,8 +42,8 @@ class TelemetryLatest(ModelViewSet):
 
     def retrieve(self, request, device=None):
         queryset = Telemetry.objects.filter(
-            device__serial=device).order_by('-time')[0]
+            device__serial=device).order_by('-time')
         if not queryset:
             raise Http404
-        serializer = TelemetrySerializer(queryset)
+        serializer = TelemetrySerializer(queryset[0])
         return Response(serializer.data)

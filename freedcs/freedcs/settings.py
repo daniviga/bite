@@ -129,7 +129,7 @@ STATIC_URL = '/static/'
 SKIP_WHITELIST = True
 
 MQTT_BROKER = {
-    'HOST': 'rabbitmq',
+    'HOST': 'broker',
     'PORT': '1883',
 }
 

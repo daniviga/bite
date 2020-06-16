@@ -1,0 +1,18 @@
+version: "3.7"
+
+services:
+  broker:
+    image: rabbitmq:3-management-alpine
+    # environment:  # we use unauth access atm
+    #   RABBITMQ_DEFAULT_VHOST: "freedcs"
+    #   RABBITMQ_DEFAULT_USER: "freedcs"
+    #   RABBITMQ_DEFAULT_PASS: "password"
+    volumes:
+      - ./mqtt/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+    networks:
+      - net
+    ports:
+      - "1883:1883"
+      - "15672:15672"
+    init: true
+    restart: always

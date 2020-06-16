@@ -6,7 +6,7 @@ from freedcs import settings
 SECRET_KEY = 'i4z%50+4b4ek(l0#!w2-r1hpo%&r6tk7p$p_-(=6d!c9n=g5m&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -21,9 +21,10 @@ DATABASES = {
     }
 }
 
-MQTT_BROKER = {
-    'HOST': 'rabbitmq',
-    'PORT': 1883,
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
 }
 
 SKIP_WHITELIST = True
