@@ -75,9 +75,11 @@ services:
     image: daniviga/beer
     volumes:
       - "../beer:/srv/app/beer"
-    command: ["python3", "manage.py", "migrate", "--noinput"]
+    command: ["dockerize", "-wait", "tcp://timescale:5432", "python3", "manage.py", "migrate", "--noinput"]
     networks:
       - net
+    depends_on:
+      - timescale
 
   mqtt-to-db:
     <<: *service_default
