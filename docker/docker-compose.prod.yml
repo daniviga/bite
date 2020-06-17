@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   ingress:
-    command: --providers.docker
+    # command: --providers.docker  # For traefik only
     ports:
       - "80:80"
 
