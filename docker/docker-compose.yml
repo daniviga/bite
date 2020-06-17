@@ -25,7 +25,7 @@ services:
     <<: *service_default
     image: timescale/timescaledb:latest-pg12
     environment:
-      POSTGRES_USER: "beer"
+      POSTGRES_USER: "bite"
       POSTGRES_PASSWORD: "password"
     volumes:
       - "pgdata:/var/lib/postgresql/data"
@@ -53,14 +53,14 @@ services:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
 
-  beer:
+  bite:
     <<: *service_default
     build:
       context: ..
       dockerfile: ./docker/django/Dockerfile
-    image: daniviga/beer
+    image: daniviga/bite
     volumes:
-      - "../beer:/srv/app/beer"
+      - "../bite:/srv/app/bite"
     command: ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
     networks:
       - net
@@ -69,12 +69,12 @@ services:
       - data-migration
       - timescale
     labels:
-      - "traefik.http.routers.beer.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.bite.rule=PathPrefix(`/`)"
 
   data-migration:
-    image: daniviga/beer
+    image: daniviga/bite
     volumes:
-      - "../beer:/srv/app/beer"
+      - "../bite:/srv/app/bite"
     command: ["dockerize", "-wait", "tcp://timescale:5432", "python3", "manage.py", "migrate", "--noinput"]
     networks:
       - net
@@ -83,9 +83,9 @@ services:
 
   mqtt-to-db:
     <<: *service_default
-    image: daniviga/beer
+    image: daniviga/bite
     volumes:
-      - "../beer:/srv/app/beer"
+      - "../bite:/srv/app/bite"
     command: ["python3", "manage.py", "mqtt-to-db"]
     networks:
       - net

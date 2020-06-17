@@ -6,15 +6,15 @@ services:
     ports:
       - "80:80"
 
-  beer:
+  bite:
     volumes:
-      - "./django/production.py.sample:/srv/app/beer/beer/production.py"
-    command: ["gunicorn", "-b", "0.0.0.0:8000", "beer.wsgi:application"]
+      - "./django/production.py.sample:/srv/app/bite/bite/production.py"
+    command: ["gunicorn", "-b", "0.0.0.0:8000", "bite.wsgi:application"]
 
   data-migration:
     volumes:
-      - "./django/production.py.sample:/srv/app/beer/beer/production.py"
+      - "./django/production.py.sample:/srv/app/bite/bite/production.py"
 
   mqtt-to-db:
     volumes:
-      - "./django/production.py.sample:/srv/app/beer/beer/production.py"
+      - "./django/production.py.sample:/srv/app/bite/bite/production.py"
