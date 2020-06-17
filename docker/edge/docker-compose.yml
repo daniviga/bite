@@ -13,7 +13,7 @@ services:
     <<: *service_default
     build:
       context: ../simulator
-    image: daniviga/freedcs-device-simulator
+    image: daniviga/beer-device-simulator
     environment:
       IOT_HTTP: "http://192.168.10.123:8000"
       # IOT_SERIAL: "abcd1234"
@@ -26,13 +26,13 @@ services:
     <<: *service_default
     build:
       context: ../simulator
-    image: daniviga/freedcs-device-simulator
+    image: daniviga/beer-device-simulator
     environment:
       IOT_HTTP: "http://192.168.10.123:8000"
       IOT_MQTT: "192.168.10.123:1883"
       # IOT_SERIAL: "abcd1234"
       # IOT_DELAY: 10
       IOT_DEBUG: 1
-    command: ["/opt/freedcs/device_simulator.py", "-t", "mqtt"]
+    command: ["/opt/beer/device_simulator.py", "-t", "mqtt"]
     networks:
       - localnet

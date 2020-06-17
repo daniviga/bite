@@ -25,7 +25,7 @@ services:
     <<: *service_default
     image: timescale/timescaledb:latest-pg12
     environment:
-      POSTGRES_USER: "freedcs"
+      POSTGRES_USER: "beer"
       POSTGRES_PASSWORD: "password"
     volumes:
       - "pgdata:/var/lib/postgresql/data"
@@ -53,14 +53,14 @@ services:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
 
-  freedcs:
+  beer:
     <<: *service_default
     build:
       context: ..
       dockerfile: ./docker/django/Dockerfile
-    image: daniviga/freedcs
+    image: daniviga/beer
     volumes:
-      - "../freedcs:/srv/app/freedcs"
+      - "../beer:/srv/app/beer"
     command: ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
     networks:
       - net
@@ -69,21 +69,21 @@ services:
       - data-migration
       - timescale
     labels:
-      - "traefik.http.routers.freedcs.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.beer.rule=PathPrefix(`/`)"
 
   data-migration:
-    image: daniviga/freedcs
+    image: daniviga/beer
     volumes:
-      - "../freedcs:/srv/app/freedcs"
+      - "../beer:/srv/app/beer"
     command: ["python3", "manage.py", "migrate", "--noinput"]
     networks:
       - net
 
   mqtt-to-db:
     <<: *service_default
-    image: daniviga/freedcs
+    image: daniviga/beer
     volumes:
-      - "../freedcs:/srv/app/freedcs"
+      - "../beer:/srv/app/beer"
     command: ["python3", "manage.py", "mqtt-to-db"]
     networks:
       - net

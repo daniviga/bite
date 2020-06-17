@@ -4,8 +4,8 @@ services:
   broker:
     image: rabbitmq:3-management-alpine
     # environment:  # we use unauth access atm
-    #   RABBITMQ_DEFAULT_VHOST: "freedcs"
-    #   RABBITMQ_DEFAULT_USER: "freedcs"
+    #   RABBITMQ_DEFAULT_VHOST: "beer"
+    #   RABBITMQ_DEFAULT_USER: "beer"
     #   RABBITMQ_DEFAULT_PASS: "password"
     volumes:
       - ./mqtt/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
