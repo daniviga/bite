@@ -4,7 +4,8 @@
 #define ERASE_FIRST 0
 
 const byte mac[] = {
-  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
+};
 const char serial[] = "abcd1234";
 
 struct netConfig {
@@ -24,7 +25,7 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
-  #if ERASE_FIRST
+#if ERASE_FIRST
   // initialize the LED pin as an output.
   pinMode(13, OUTPUT);
   // turn the LED on while erasing
@@ -32,18 +33,17 @@ void setup() {
   for (int i = 0 ; i < EEPROM.length() ; i++) {
     EEPROM.write(i, 0);
   }
-  // turn the LED on when we're done 
+  // turn the LED on when we're done
   digitalWrite(13, LOW);
-  #endif
-  
+#endif
+
   int eeAddress = 0;   //Location we want the data to be put.
 
-  //One simple call, with the address first and the object second.
   EEPROM.put(eeAddress, mac);
   eeAddress += sizeof(mac);
   EEPROM.put(eeAddress, serial);
   eeAddress += sizeof(serial);
-  
+
   EEPROM.put(eeAddress, config);
   Serial.println("Data written!");
 }
