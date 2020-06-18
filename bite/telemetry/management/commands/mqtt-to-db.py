@@ -1,3 +1,4 @@
+import socket
 import asyncio
 import json
 import time
@@ -46,8 +47,11 @@ class Command(BaseCommand):
             try:
                 client.connect(MQTT_HOST, MQTT_PORT)
                 break
-            except ConnectionRefusedError:
-                self.stdout.write('WARNING: Broker not available')
+            except (socket.gaierror, ConnectionRefusedError):
+                self.stdout.write(
+                    self.style.WARNING('WARNING: Broker not available'))
                 time.sleep(5)
+
+        self.stdout.write(self.style.SUCCESS('INFO: Broker subscribed'))
         client.disconnect()
         asyncio.run(self.mqtt_broker())

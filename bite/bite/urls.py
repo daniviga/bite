@@ -22,6 +22,7 @@ from telemetry import urls as telemetry_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('ht/', include('health_check.urls')),
     path('api/', include(api_urls)),
     path('telemetry/', include(telemetry_urls)),
 ]

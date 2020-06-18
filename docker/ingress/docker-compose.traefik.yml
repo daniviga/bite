@@ -1,0 +1,21 @@
+version: "3.7"
+
+services:
+  ingress:
+    <<: *service_default
+    image: traefik:v2.2
+    command: --api.insecure=true --providers.docker
+    ports:
+      - "8000:80"
+      - "8080:8080"
+    networks:
+      - net
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
+    init: true
+    
+  bite:
+    labels:
+      - "traefik.http.routers.bite.rule=PathPrefix(`/`)"

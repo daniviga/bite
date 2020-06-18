@@ -15,7 +15,10 @@ COPY --from=builder /usr/local/lib/python3.8/site-packages/ /usr/local/lib/pytho
 COPY --chown=1000:1000 bite /srv/app/bite
 COPY --chown=1000:1000 requirements.txt /tmp/requirements.txt
 
-RUN pip3 install -r /tmp/requirements.txt && rm /tmp/requirements.txt
+RUN mkdir -p /srv/appdata/bite/static \
+        && chown -R 1000:1000 /srv/appdata/bite \
+        && pip3 install -r /tmp/requirements.txt \
+        && rm /tmp/requirements.txt
 
 USER 1000:1000
 WORKDIR /srv/app/bite
