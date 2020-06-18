@@ -1,20 +1,15 @@
 version: "3.7"
 
 services:
-  ingress:
-    # command: --providers.docker  # For traefik only
-    ports:
-      - "80:80"
-
   bite:
     volumes:
-      - "./django/production.py.sample:/srv/app/bite/bite/production.py"
+      - ./django/production.py.sample:/srv/app/bite/bite/production.py
     command: ["gunicorn", "-b", "0.0.0.0:8000", "bite.wsgi:application"]
 
   data-migration:
     volumes:
-      - "./django/production.py.sample:/srv/app/bite/bite/production.py"
+      - ./django/production.py.sample:/srv/app/bite/bite/production.py
 
   mqtt-to-db:
     volumes:
-      - "./django/production.py.sample:/srv/app/bite/bite/production.py"
+      - ./django/production.py.sample:/srv/app/bite/bite/production.py
