@@ -1,0 +1,46 @@
+language: python
+dist: bionic
+
+services:
+ - docker
+
+before_install:
+  - pip -q install -U docker-compose
+
+jobs:
+  include:
+  - stage: build
+    # before_script:
+    #   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    script:
+      - docker-compose -f docker/docker-compose.yml build
+    #  - docker push daniviga/beer
+    #  - docker push daniviga/ntpd
+  - stage: django
+    install:
+      - docker-compose -f docker/docker-compose.yml build
+    #  - docker-compose -f docker/docker-compose.yml pull
+    before_script:
+      - docker-compose -f docker/docker-compose.yml up -d
+    script:
+      - docker-compose -f docker/docker-compose.yml exec python manage.py test
+  - stage: simulator
+    env: HTTP
+    install:
+      - docker-compose -f docker/docker-compose.yml build
+    #  - docker-compose -f docker/docker-compose.yml pull
+    before_script:
+      - docker-compose -f docker/docker-compose.yml up -d
+    script:
+      - ./simulator/device_simulator.py -t http -s 'http1234' &
+      - curl http://localhost/telemetry/http1234/last/
+  - stage: simulator
+    env: MQTT
+    install:
+      - docker-compose -f docker/docker-compose.yml build
+    #  - docker-compose -f docker/docker-compose.yml pull
+    before_script:
+      - docker-compose -f docker/docker-compose.yml up -d
+    script:
+      - ./simulator/device_simulator.py -t mqtt -s 'mqtt1234' &
+      - curl http://localhost/telemetry/mqtt1234/last/
