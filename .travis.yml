@@ -23,7 +23,7 @@ jobs:
     before_script:
       - docker-compose -f docker/docker-compose.yml up -d
     script:
-      - docker-compose -f docker/docker-compose.yml exec python manage.py test
+      - docker-compose -f docker/docker-compose.yml exec bite python manage.py test
   - stage: simulator
     env: HTTP
     install:
