@@ -16,7 +16,7 @@ jobs:
       - docker-compose -f docker/docker-compose.yml build
       - docker push daniviga/bite
       - docker push daniviga/ntpd
-    if: branch = master
+    if: (branch = master) AND (NOT (type IN (pull_request)))
   - stage: django
     install:
       - docker-compose -f docker/docker-compose.yml pull
