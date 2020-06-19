@@ -7,7 +7,7 @@ services:
 before_install:
   - pip -q install -U docker-compose
 
-simulator: &simulator
+- &simulator
     stage: simulator
     install:
       - docker-compose -f docker/docker-compose.yml pull
