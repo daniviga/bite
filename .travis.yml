@@ -32,6 +32,7 @@ jobs:
     before_script:
       - docker-compose -f docker/docker-compose.yml up -d
     script:
+      - sleep 10
       - ./simulator/device_simulator.py -t http -s 'http1234' &
       - curl http://localhost/telemetry/http1234/last/
   - stage: simulator
@@ -42,5 +43,6 @@ jobs:
     before_script:
       - docker-compose -f docker/docker-compose.yml up -d
     script:
-      - sleep 10 && ./simulator/device_simulator.py -t mqtt -s 'mqtt1234' &
+      - sleep 10
+      - IOT_DEBUG=1 ./simulator/device_simulator.py -t mqtt -s 'mqtt1234' &
       - curl -sf http://localhost/telemetry/mqtt1234/last/
