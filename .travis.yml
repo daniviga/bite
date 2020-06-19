@@ -5,21 +5,23 @@ services:
  - docker
 
 before_install:
-  - pip -q install -U docker-compose -r requirements.txt
+  - pip -q install -U docker-compose
 
 jobs:
   include:
   - stage: build
-    # before_script:
-    #   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    before_script:
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
     script:
       - docker-compose -f docker/docker-compose.yml build
-    #  - docker push daniviga/beer
-    #  - docker push daniviga/ntpd
+      - docker push daniviga/beer
+      - docker push daniviga/ntpd
+    on:
+      branch: master
   - stage: django
     install:
+      - docker-compose -f docker/docker-compose.yml pull
       - docker-compose -f docker/docker-compose.yml build
-    #  - docker-compose -f docker/docker-compose.yml pull
     before_script:
       - docker-compose -f docker/docker-compose.yml up -d
     script:
@@ -29,12 +31,13 @@ jobs:
       - IOT_TL=http
       - IOT_TL=mqtt
     install:
+      - docker-compose -f docker/docker-compose.yml pull
       - docker-compose -f docker/docker-compose.yml build
-    #  - docker-compose -f docker/docker-compose.yml pull
     before_script:
-      - docker-compose -f docker/docker-compose.yml up -d
+      - docker-compose -f docker/docker-compose.yml -f docker/edge/docker-compose.edge.yml up -d
     script:
-      - sleep 10
-      - IOT_DEBUG=1 ./docker/simulator/device_simulator.py -s 'simu1234' -d 5 &
-      - sleep 15
-      - curl -sf http://localhost/telemetry/simu1234/last/
+      - sleep 5  # warm-up
+      - sed -i 's/# IOT_SERIAL/IOT_SERIAL/g' docker/edge/docker-compose.modules.yml
+      - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/edge/docker-compose.modules.yml up -d
+      - sleep 30  # collect some telemetry
+      - curl -sf http://localhost/telemetry/${IOT_TL}1234/last/
