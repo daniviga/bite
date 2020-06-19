@@ -33,7 +33,8 @@ jobs:
       - docker-compose -f docker/docker-compose.yml up -d
     script:
       - sleep 10
-      - ./simulator/device_simulator.py -t http -s 'http1234' &
+      - ./simulator/device_simulator.py -t http -s 'http1234' -d 5 &
+      - sleep 10
       - curl http://localhost/telemetry/http1234/last/
   - stage: simulator
     env: MQTT
@@ -44,5 +45,6 @@ jobs:
       - docker-compose -f docker/docker-compose.yml up -d
     script:
       - sleep 10
-      - IOT_DEBUG=1 ./simulator/device_simulator.py -t mqtt -s 'mqtt1234' &
+      - IOT_DEBUG=1 ./simulator/device_simulator.py -t mqtt -s 'mqtt1234' -d 5&
+      - sleep 10
       - curl -sf http://localhost/telemetry/mqtt1234/last/
