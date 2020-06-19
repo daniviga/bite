@@ -1,0 +1,9 @@
+FROM daniviga/ntpd
+
+COPY ./chrony.keys /etc/chrony/chrony.keys
+
+RUN echo "keyfile /etc/chrony/chrony.keys" \
+        >> /etc/chrony/chrony.conf 
+
+EXPOSE 123/udp
+ENTRYPOINT ["chronyd", "-d", "-s", "-x"]
