@@ -5,7 +5,7 @@ services:
  - docker
 
 before_install:
-  - pip -q install -U docker-compose
+  - pip -q install -U docker-compose -r requirements.txt
 
 jobs:
   include:
@@ -25,24 +25,26 @@ jobs:
     script:
       - docker-compose -f docker/docker-compose.yml exec bite python manage.py test
   - stage: simulator
-    env: HTTP
+    env: 
+      - IOT_TL=http
     install:
       - docker-compose -f docker/docker-compose.yml build
     #  - docker-compose -f docker/docker-compose.yml pull
     before_script:
       - docker-compose -f docker/docker-compose.yml up -d
     script:
-      - ./docker/simulator/device_simulator.py -t mqtt -s 'http1234' -d 5 &
+      - ./docker/simulator/device_simulator.py -s 'http1234' -d 5 &
       - sleep 10
-      - curl http://localhost/telemetry/http1234/last/
+      - curl -sf http://localhost/telemetry/http1234/last/
   - stage: simulator
-    env: MQTT
+    env:
+      - IOT_TL=mqtt
     install:
       - docker-compose -f docker/docker-compose.yml build
     #  - docker-compose -f docker/docker-compose.yml pull
     before_script:
       - docker-compose -f docker/docker-compose.yml up -d
     script:
-      - ./docker/simulator/device_simulator.py -t mqtt -s 'mqtt1234' -d 5 &
+      - ./docker/simulator/device_simulator.py -s 'mqtt1234' -d 5 &
       - sleep 10
       - curl -sf http://localhost/telemetry/mqtt1234/last/
