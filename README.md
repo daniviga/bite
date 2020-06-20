@@ -4,6 +4,8 @@ Playing with IoT
 
 This project is for educational purposes only. It does not implement any authentication and/or encryption protocol, so it is not suitable for real production.
 
+![Application Schema](./docs/application_chart.svg)
+
 ## Installation
 
 ### Requirements
@@ -109,7 +111,7 @@ docker-compose -f docker/docker-compose.yml up -f docker/edge/docker-compose.edg
 DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker-compose.modules.yml up -d [--scale {device-http,device-mqtt}=N]
 ```
 
-## Ardunio
+## Arduino
 
 A simple Arduino UNO sketch is provided in the `arduino/tempLightSensor` folder. The sketch reads temperature and light from sensors. The simple schematic is:
 
