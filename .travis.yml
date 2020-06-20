@@ -12,8 +12,8 @@ simulator: &simulator
     install:
       - docker-compose -f docker/docker-compose.yml pull
       - docker-compose -f docker/docker-compose.yml build
-      - docker-compose -f docker/docker-compose.yml -f docker/edge/docker-compose.edge.yml pull
-      - docker-compose -f docker/docker-compose.yml -f docker/edge/docker-compose.edge.yml build
+      - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/docker-compose.yml -f docker/edge/docker-compose.edge.yml pull
+      - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/docker-compose.yml -f docker/edge/docker-compose.edge.yml build
     before_script:
       - docker-compose -f docker/docker-compose.yml -f docker/edge/docker-compose.edge.yml up -d
     script:
