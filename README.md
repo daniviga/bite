@@ -2,7 +2,9 @@
 
 Playing with IoT
 
-This project is for educational purposes only. It does not implement any authentication and/or encryption protocol, so it is not suitable for real production.
+This project is for educational purposes only. It does not implement any
+authentication and/or encryption protocol, so it is not suitable for real
+production.
 
 ![Application Schema](./docs/application_chart.svg)
 
@@ -13,7 +15,9 @@ This project is for educational purposes only. It does not implement any authent
 - `docker-ce` or `moby`
 - `docker-compose`
 
-The project is compatible with Docker for Windows (using Linux executors), but it is advised to directly use a minimal Linux VM instead (via the preferred hypervisor).
+The project is compatible with Docker for Windows (using Linux executors),
+but it is advised to directly use a minimal Linux VM instead
+(via the preferred hypervisor).
 
 The application stack is composed by the following components:
 
@@ -80,17 +84,20 @@ docker-compose -f docker/docker-compose.yml up -f docker/ingress/docker-compose.
 
 A ~8x memory usage can be expected compared to Mosquitto.
 
-To use [VerneMQ](https://vernemq.com/) instead of Mosquitto use:
+To use [VerneMQ](https://vernemq.com/) instead of Mosquitto run:
 ```bash
 docker-compose -f docker/docker-compose.yml up -f docker/mqtt/docker-compose.vernemq.yml -d
 ```
 
 ### RabbitMQ
 
-RabbitMQ does provides AMQP protocol too, but ingestion on the application side is not implemented yet.
+RabbitMQ does provide AMQP protocol too, but ingestion on the application side
+is not implemented yet.
 A ~10x memory usage can be expected compared to Mosquitto.
 
-To use [RabbitMQ](https://www.rabbitmq.com/) (with the MQTT plugin enabled) instead of Mosquitto use:
+To use [RabbitMQ](https://www.rabbitmq.com/) (with the MQTT plugin enabled)
+ instead of Mosquitto run:
+
 ```bash
 docker-compose -f docker/docker-compose.yml up -f docker/mqtt/docker-compose.rabbitmq.yml -d
 ```
@@ -113,13 +120,8 @@ DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker-compose.modules.yml up -d
 
 ## Arduino
 
-A simple Arduino UNO sketch is provided in the `arduino/tempLightSensor` folder. The sketch reads temperature and light from sensors. The simple schematic is:
+A simple Arduino UNO sketch is provided in the `arduino/tempLightSensor` folder.
+The sketch reads temperature and light from sensors.
 
-![tempLightSensor](./arduino/tempLightSensor/tempLightSensor.svg)
+[Read more ...](./arduino/README.md)
 
-The sketch does require an Ethernet shield and a bunch of libraries which are available as git submodules under `arduino/libraries`.
-Be advised that some libraries (notably the NTP one) are customized.
-
-Configuration parameters are stored and retrieved from the EEPROM. An helper sketch to update the EEPROM is available under `arduino/eeprom_prog`
-
-An `ESP32` board (or similar Arduino) may be used, with some adaptions, too.
