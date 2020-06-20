@@ -1,8 +1,5 @@
 version: "3.7"
 
-networks:
-  localnet:
-
 x-op-service-default: &service_default
   restart: always
   init: true
@@ -15,12 +12,11 @@ services:
       context: ../simulator
     image: daniviga/bite-device-simulator
     environment:
-      IOT_HTTP: "http://192.168.10.123:8000"
-      # IOT_SERIAL: "abcd1234"
+      IOT_HTTP: "http://ingress"
+      # IOT_SERIAL: "http1234"
       # IOT_DELAY: 10
       IOT_DEBUG: 1
-    networks:
-      - localnet
+    network_mode: "host"
 
   device-mqtt:
     <<: *service_default
@@ -28,11 +24,10 @@ services:
       context: ../simulator
     image: daniviga/bite-device-simulator
     environment:
-      IOT_HTTP: "http://192.168.10.123:8000"
-      IOT_MQTT: "192.168.10.123:1883"
-      # IOT_SERIAL: "abcd1234"
+      IOT_HTTP: "http://ingress"
+      IOT_MQTT: "broker:1883"
+      # IOT_SERIAL: "mqtt1234"
       # IOT_DELAY: 10
       IOT_DEBUG: 1
     command: ["/opt/bite/device_simulator.py", "-t", "mqtt"]
-    networks:
-      - localnet
+    network_mode: "host"

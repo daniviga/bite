@@ -1,0 +1,47 @@
+language: python
+dist: bionic
+
+services:
+ - docker
+
+before_install:
+  - pip -q install -U docker-compose
+
+simulator: &simulator
+    stage: simulator
+    install:
+      - docker-compose -f docker/docker-compose.yml pull
+      - docker-compose -f docker/docker-compose.yml build
+    before_script:
+      - docker-compose -f docker/docker-compose.yml -f docker/edge/docker-compose.edge.yml up -d
+      - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/docker-compose.yml -f docker/edge/docker-compose.edge.yml pull
+      - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/docker-compose.yml -f docker/edge/docker-compose.edge.yml build
+    script:
+      - sleep 5  # warm-up
+      - sed -i 's/# IOT_SERIAL/IOT_SERIAL/g' docker/edge/docker-compose.modules.yml
+      - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/edge/docker-compose.modules.yml up -d
+      - sleep 30  # collect some telemetry
+      - curl -sf http://localhost/telemetry/${IOT_TL}1234/last/
+
+jobs:
+  include:
+  - stage: build
+    before_script:
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    script:
+      - docker-compose -f docker/docker-compose.yml build
+      - docker push daniviga/bite
+      - docker push daniviga/ntpd
+    if: branch = master
+  - stage: django
+    install:
+      - docker-compose -f docker/docker-compose.yml pull
+      - docker-compose -f docker/docker-compose.yml build
+    before_script:
+      - docker-compose -f docker/docker-compose.yml up -d
+    script:
+      - docker-compose -f docker/docker-compose.yml exec bite python manage.py test
+  - <<: *simulator
+    env: IOT_TL=http
+  - <<: *simulator
+    env: IOT_TL=mqtt

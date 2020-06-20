@@ -1,8 +1,14 @@
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
 from django.contrib.postgres.fields import JSONField
 
 from api.models import Device
+
+
+def telemetry_validation(value):
+    if not value:
+        raise ValidationError("No telemetry has been sent")
 
 
 class Telemetry(models.Model):
@@ -14,7 +20,7 @@ class Telemetry(models.Model):
     clock = models.IntegerField(
         validators=[MinValueValidator(0)],
         null=True)
-    payload = JSONField()
+    payload = JSONField(validators=[telemetry_validation])
 
     class Meta:
         ordering = ['-time', 'device']
