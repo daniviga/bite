@@ -47,4 +47,4 @@ jobs:
   - <<: *iot-simulator
     env: IOT_TL=mqtt
   - <<: *iot-simulator
-    env: IOT_TL=websockets
+    env: IOT_TL=ws
