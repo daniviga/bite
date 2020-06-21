@@ -13,12 +13,11 @@ RUN apk update && apk add --no-cache postgresql-libs \
         | tar -xz -C /usr/local/bin
 COPY --from=builder /usr/local/lib/python3.8/site-packages/ /usr/local/lib/python3.8/site-packages/
 COPY --chown=1000:1000 bite /srv/app/bite
-COPY --chown=1000:1000 requirements.txt /tmp/requirements.txt
+COPY --chown=1000:1000 requirements.txt /srv/app/bite/requirements.txt
 
-RUN mkdir -p /srv/appdata/bite/static \
-        && chown -R 1000:1000 /srv/appdata/bite \
-        && pip3 install -r /tmp/requirements.txt \
-        && rm /tmp/requirements.txt
+RUN pip3 install -r /srv/app/bite/requirements.txt \
+        && mkdir -p /srv/appdata/bite/static \
+        && chown -R 1000:1000 /srv/appdata/bite
 
 USER 1000:1000
 WORKDIR /srv/app/bite
