@@ -5,10 +5,11 @@
 #include <NTPClient.h>
 #include <ArduinoJson.h>
 
-#define DEBUG_TO_SERIAL 1  // debug on serial port
-#define USE_MQTT 1         // use mqtt protocol instead of http post
-#define USE_INTERNAL_NTP 0 // use default ntp server or the internal one
-#define AREF_VOLTAGE 3.3   // set aref voltage to 3.3v instead of default 5v
+#define DEBUG_TO_SERIAL   0   // debug on serial port
+#define USE_MQTT          1   // use mqtt protocol instead of http post
+#define USE_INTERNAL_NTP  1   // use default ntp server or the internal one
+#define TELEMETRY_DELAY  10   // second between telemetry samples
+#define AREF_VOLTAGE      3.3 // set aref voltage to 3.3v instead of default 5v
 
 char serial[9];
 
@@ -96,7 +97,7 @@ void setup(void) {
 }
 
 void loop(void) {
-  const int postDelay = 10 * 1000;
+  const int postDelay = TELEMETRY_DELAY * 1000;
 
   unsigned int tempReading = analogRead(A0);
   unsigned int photocellReading = analogRead(A1);
