@@ -26,10 +26,10 @@ services:
     environment:
       IOT_HTTP: "http://ingress"
       IOT_MQTT: "ingress:80"
-      # IOT_SERIAL: "websockets1234"
+      # IOT_SERIAL: "ws"
       # IOT_DELAY: 10
       IOT_DEBUG: 1
-    command: ["/opt/bite/device_simulator.py", "-t", "websockets"]
+    command: ["/opt/bite/device_simulator.py", "-t", "ws"]
     network_mode: "host"
 
   device-mqtt:

@@ -52,7 +52,7 @@ def publish_json(transport, endpoint, data):
         hostname=endpoint.split(':')[0],
         port=int(endpoint.split(':')[1]),
         client_id=serial,
-        transport=transport,
+        transport=('websockets' if transport == 'ws' else 'tcp'),
         # auth=auth FIXME
     )
 
@@ -70,7 +70,7 @@ def main():
                                                '127.0.0.1:1883'),
                         help='IoT MQTT endpoint')
     parser.add_argument('-t', '--transport',
-                        choices=['mqtt', 'websockets', 'http'],
+                        choices=['mqtt', 'ws', 'http'],
                         default=os.environ.get('IOT_TL', 'http'),
                         help='IoT transport layer')
     parser.add_argument('-s', '--serial',
@@ -104,7 +104,7 @@ def main():
         }
         if args.transport == 'http':
             post_json(args.endpoint, telemetry, {**data, 'payload': payload})
-        elif args.transport in ('mqtt', 'websockets'):
+        elif args.transport in ('mqtt', 'ws'):
             publish_json(
                 args.transport, args.mqtt, {**data, 'payload': payload})
         else:
