@@ -162,7 +162,7 @@ void postData(const netConfig &postAPI, const String &URL, const DynamicJsonDocu
     ethClient.println(postAPI.port);
     ethClient.println("Content-Type: application/json");
     ethClient.print("Content-Length: ");
-    ethClient.println(measureJsonPretty(json));
+    ethClient.println(measureJson(json));
     ethClient.println("Connection: close");
     ethClient.println();
     serializeJson(json, ethClient);
