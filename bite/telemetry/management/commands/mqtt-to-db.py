@@ -8,6 +8,8 @@ from asyncio_mqtt import Client
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.core.exceptions import ObjectDoesNotExist
+
 from api.models import Device
 from telemetry.models import Telemetry
 
@@ -20,7 +22,10 @@ class Command(BaseCommand):
 
     @sync_to_async
     def get_device(self, serial):
-        return Device.objects.get(serial=serial)
+        try:
+            return Device.objects.get(serial=serial)
+        except ObjectDoesNotExist:
+            return None
 
     @sync_to_async
     def store_telemetry(self, device, payload):
@@ -39,7 +44,12 @@ class Command(BaseCommand):
                 async for message in messages:
                     payload = json.loads(message.payload.decode('utf-8'))
                     device = await self.get_device(message.topic)
-                    await self.store_telemetry(device, payload)
+                    if device is not None:
+                        await self.store_telemetry(device, payload)
+                    else:
+                        self.stdout.write(
+                            self.style.ERROR(
+                                'DEBUG: message discarded'))
 
     def handle(self, *args, **options):
         client = mqtt.Client()
