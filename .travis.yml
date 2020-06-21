@@ -1,5 +1,6 @@
-language: python
+os: linux
 dist: bionic
+language: python
 
 services:
  - docker
@@ -7,7 +8,7 @@ services:
 before_install:
   - pip -q install -U docker-compose
 
-simulator: &simulator
+iot-simulator: &iot-simulator
     stage: simulator
     install:
       - docker-compose -f docker/docker-compose.yml pull
@@ -41,7 +42,9 @@ jobs:
       - docker-compose -f docker/docker-compose.yml up -d
     script:
       - docker-compose -f docker/docker-compose.yml exec bite python manage.py test
-  - <<: *simulator
+  - <<: *iot-simulator
     env: IOT_TL=http
-  - <<: *simulator
+  - <<: *iot-simulator
     env: IOT_TL=mqtt
+  - <<: *iot-simulator
+    env: IOT_TL=websockets

@@ -37,7 +37,8 @@ The application stack is composed by the following components:
 docker-compose -f docker/docker-compose.yml up -d [--scale {bite,mqtt-to-db)=N]
 ```
 It exposes:
-- `http://localhost:80` (HTTP)
+
+- `http://localhost:80` (HTTP and MQTT over Websockets)
 - `tcp://localhost:1883` (MQTT)
 - `udp://localhost:123` (NTP)
 
@@ -48,22 +49,26 @@ Django runs with `DEBUG = True` and `SKIP_WHITELIST = True`
 ```bash
 docker-compose -f docker/docker-compose.yml -f docker-compose.dev.yml up -d [--scale {bite,mqtt-to-db)=N]
 ```
+
 It exposes:
-- `http://localhost:80` (HTTP)
+
+- `http://localhost:80` (HTTP and MQTT over Websockets)
 - `http://localhost:8080` (Django's `runserver`)
 - `tcp://localhost:1883` (MQTT)
+- `tcp://localhost:9001` (MQTT over Websockets)
 - `udp://localhost:123` (NTP)
 - `tcp://localhost:5432` (PostgreSQL/Timescale)
 
 Django runs with `DEBUG = True` and `SKIP_WHITELIST = True`
 
-### Production
+### Production (kind of)
 
 ```bash
 docker-compose -f docker/docker-compose.yml -f docker-compose.prod.yml up -d [--scale {bite,mqtt-to-db)=N]
 ```
 It exposes:
-- `http://localhost:80` (HTTP)
+
+- `http://localhost:80` (HTTP and MQTT over Websockets)
 - `tcp://localhost:1883` (MQTT)
 - `udp://localhost:123` (NTP)
 
@@ -104,7 +109,8 @@ docker-compose -f docker/docker-compose.yml up -f docker/mqtt/docker-compose.rab
 
 ## EDGE gateway simulation (via dind)
 
-An EDGE gateway, with containers as modules, may be simulated via dind (docker-in-docker).
+An EDGE gateway, with containers as modules, may be simulated via dind
+(docker-in-docker).
 
 ### Start the EDGE
 
@@ -115,7 +121,7 @@ docker-compose -f docker/docker-compose.yml up -f docker/edge/docker-compose.edg
 ### Run the modules inside the EDGE
 
 ```bash
-DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker-compose.modules.yml up -d [--scale {device-http,device-mqtt}=N]
+DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker-compose.modules.yml up -d [--scale {device-http,device-ws,device-mqtt}=N]
 ```
 
 ## Arduino
@@ -125,3 +131,13 @@ The sketch reads temperature and light from sensors.
 
 [Read more ...](./arduino/README.md)
 
+## Testing
+
+Application tests are part of the Django suite:
+
+```bash
+python manage.py test
+```
+
+End-to-End tests are performed via Travis-CI. See [`.travis.yml`](.travis.yml)
+for further explanations.

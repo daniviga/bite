@@ -5,6 +5,11 @@ services:
     ports:
         - "5432:5432"
 
+  broker:
+    ports:
+        - "1883:1883"
+        - "9001:9001"
+
   bite:
     volumes:
       - ../bite:/srv/app/bite
