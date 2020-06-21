@@ -7,15 +7,15 @@ services:
 
   broker:
     ports:
-        - "1883:1883"
-        - "9001:9001"
+        - "${CUSTOM_DOCKER_IP:-0.0.0.0}:1883:1883"
+        - "${CUSTOM_DOCKER_IP:-0.0.0.0}:9001:9001"
 
   bite:
     volumes:
       - ../bite:/srv/app/bite
     command: ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
     ports:
-        - "8000:8000"
+        - "${CUSTOM_DOCKER_IP:-0.0.0.0}:8000:8000"
 
   data-migration:
     volumes:

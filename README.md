@@ -47,6 +47,10 @@ a [PostgreSQL](https://www.postgresql.org/) database with a timeseries extension
 
 ## Deployment
 
+The `$CUSTOM_DOCKER_IP` environment variable can be used to set a custom
+IP address to bind ports. Default is `0.0.0.0`; `127.0.0.1` is a
+safe configuration (see https://github.com/docker/compose/issues/2999).
+
 ### Development
 
 ```bash
@@ -149,7 +153,7 @@ The sketch reads temperature and light from sensors.
 /* ... */
 
 void loop(void) {
-  const int postDelay = 10 * 1000;
+  const int postDelay = TELEMETRY_DELAY * 1000;
 
   unsigned int tempReading = analogRead(A0);
   unsigned int photocellReading = analogRead(A1);

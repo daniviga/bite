@@ -52,7 +52,9 @@ The `EEPROM` can be completely erased setting the `ERASE_FIRST` macro to `1`.
 The following macros are available in the firmware (to be set at compile time):
 
 ```c
-#define DEBUG_TO_SERIAL 1  // debug on serial port
-#define USE_MQTT 1         // use mqtt protocol instead of http post
-#define USE_INTERNAL_NTP 0 // use default ntp server or the internal one
+#define DEBUG_TO_SERIAL   0   // debug on serial port
+#define USE_MQTT          1   // use mqtt protocol instead of http post
+#define USE_INTERNAL_NTP  1   // use default ntp server or the internal one
+#define TELEMETRY_DELAY  10   // second between telemetry samples
+#define AREF_VOLTAGE      3.3 // set aref voltage to 3.3v instead of default 5v
 ```

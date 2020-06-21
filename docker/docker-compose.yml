@@ -20,7 +20,7 @@ services:
     networks:
       - net
     ports:
-      - "123:123/udp"
+      - "${CUSTOM_DOCKER_IP:-0.0.0.0}:123:123/udp"
 
   timescale:
     <<: *service_default
@@ -41,13 +41,13 @@ services:
     networks:
       - net
     ports:
-      - "1883:1883"
+      - "${CUSTOM_DOCKER_IP:-0.0.0.0}:1883:1883"
 
   ingress:
     <<: *service_default
     image: nginx:stable-alpine
     ports:
-      - "80:80"
+      - "${CUSTOM_DOCKER_IP:-0.0.0.0}:80:80"
     networks:
       - net
     volumes:
