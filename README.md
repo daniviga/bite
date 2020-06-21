@@ -51,9 +51,10 @@ The `$CUSTOM_DOCKER_IP` environment variable can be used to set a custom
 IP address to bind ports. Default is `0.0.0.0`; `127.0.0.1` is a
 safe configuration (see https://github.com/docker/compose/issues/2999).
 
-### Development
+### Development, using image code
 
 ```bash
+docker-compose -f docker/docker-compose.yml build
 docker-compose -f docker/docker-compose.yml up -d [--scale {bite,mqtt-to-db)=N]
 ```
 It exposes:
@@ -64,7 +65,7 @@ It exposes:
 
 Django runs with `DEBUG = True` and `SKIP_WHITELIST = True`
 
-### Development with direct access to services
+### Development with direct access to services and autoreload
 
 ```bash
 docker-compose -f docker/docker-compose.yml -f docker-compose.dev.yml up -d [--scale {bite,mqtt-to-db)=N]
@@ -81,7 +82,7 @@ It exposes:
 
 Django runs with `DEBUG = True` and `SKIP_WHITELIST = True`
 
-### Production (kind of)
+### Production (kind of...)
 
 ```bash
 docker-compose -f docker/docker-compose.yml -f docker-compose.prod.yml up -d [--scale {bite,mqtt-to-db)=N]
