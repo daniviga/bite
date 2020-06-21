@@ -15,7 +15,7 @@ struct netConfig {
 
 netConfig config = {
   {192, 168, 10, 123},
-  8000
+  80
 };
 
 void setup() {

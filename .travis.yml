@@ -1,5 +1,6 @@
-language: python
+os: linux
 dist: bionic
+language: python
 
 services:
  - docker
@@ -7,15 +8,15 @@ services:
 before_install:
   - pip -q install -U docker-compose
 
-simulator: &simulator
+_iot-simulator: &iot-simulator
     stage: simulator
     install:
       - docker-compose -f docker/docker-compose.yml pull
       - docker-compose -f docker/docker-compose.yml build
     before_script:
       - docker-compose -f docker/docker-compose.yml -f docker/edge/docker-compose.edge.yml up -d
-      - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/docker-compose.yml -f docker/edge/docker-compose.edge.yml pull
-      - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/docker-compose.yml -f docker/edge/docker-compose.edge.yml build
+      - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/edge/docker-compose.modules.yml pull
+      - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/edge/docker-compose.modules.yml build
     script:
       - sleep 5  # warm-up
       - sed -i 's/# IOT_SERIAL/IOT_SERIAL/g' docker/edge/docker-compose.modules.yml
@@ -41,7 +42,9 @@ jobs:
       - docker-compose -f docker/docker-compose.yml up -d
     script:
       - docker-compose -f docker/docker-compose.yml exec bite python manage.py test
-  - <<: *simulator
+  - <<: *iot-simulator
     env: IOT_TL=http
-  - <<: *simulator
+  - <<: *iot-simulator
     env: IOT_TL=mqtt
+  - <<: *iot-simulator
+    env: IOT_TL=ws
