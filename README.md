@@ -8,6 +8,11 @@ production.
 
 ![Application Schema](./docs/application_chart.svg)
 
+### Future implementations
+
+- Broker HA via [Nginx stream module](http://nginx.org/en/docs/stream/ngx_stream_core_module.html)
+- Stream analytics via [Apache Spark](https://spark.apache.org/)
+
 ## Installation
 
 ### Requirements
@@ -21,13 +26,17 @@ but it is advised to directly use a minimal Linux VM instead
 
 The application stack is composed by the following components:
 
-- [Django](https://www.djangoproject.com/) with [Django REST framework](https://www.django-rest-framework.org/) web application (running via `gunicorn` in production mode)
+- [Django](https://www.djangoproject.com/) with
+[Django REST framework](https://www.django-rest-framework.org/)
+web application (running via `gunicorn` in production mode)
   - `mqtt-to-db` custom daemon to dump telemetry into the timeseries database
   - telemetry payload is stored as json object (via PostgreSQL JSON data type)
-- [Timescale](https://www.timescale.com/) DB, a [PostgreSQL](https://www.postgresql.org/) database with a timeseries extension
+- [Timescale](https://www.timescale.com/) DB,
+a [PostgreSQL](https://www.postgresql.org/) database with a timeseries extension
 - [Mosquitto](https://mosquitto.org/) MQTT broker (see alternatives below)
 - [Nginx](http://nginx.org/) as ingress for HTTP (see alternative below)
-- [Chrony](https://chrony.tuxfamily.org/) as NTP server (with optional `MD5` encryption)
+- [Chrony](https://chrony.tuxfamily.org/) as NTP server
+(with optional `MD5` encryption)
 
 ## Deployment
 

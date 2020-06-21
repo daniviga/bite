@@ -15,8 +15,8 @@ iot-simulator: &iot-simulator
       - docker-compose -f docker/docker-compose.yml build
     before_script:
       - docker-compose -f docker/docker-compose.yml -f docker/edge/docker-compose.edge.yml up -d
-      - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/docker-compose.yml -f docker/edge/docker-compose.edge.yml pull
-      - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/docker-compose.yml -f docker/edge/docker-compose.edge.yml build
+      - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/edge/docker-compose.modules.yml pull
+      - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/edge/docker-compose.modules.yml build
     script:
       - sleep 5  # warm-up
       - sed -i 's/# IOT_SERIAL/IOT_SERIAL/g' docker/edge/docker-compose.modules.yml
