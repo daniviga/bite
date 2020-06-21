@@ -2,6 +2,13 @@
 
 Playing with IoT
 
+[![Build Status](https://travis-ci.com/daniviga/bite.svg?branch=master)](https://travis-ci.com/daniviga/bite)
+![AGPLv3](./docs/.badges/agpl3.svg)
+![Python 3.8](./docs/.badges/python.svg)
+![MQTT](./docs/.badges/mqtt.svg)
+![Moby](./docs/.badges/moby.svg)
+![docker-compose 3.7+](./docs/.badges/docker-compose.svg)
+
 This project is for educational purposes only. It does not implement any
 authentication and/or encryption protocol, so it is not suitable for real
 production.
@@ -10,7 +17,7 @@ production.
 
 ### Future implementations
 
-- Broker HA via [Nginx stream module](http://nginx.org/en/docs/stream/ngx_stream_core_module.html)
+- Broker HA via [VerneMQ clustering](https://docs.vernemq.com/clustering/introduction)
 - Stream analytics via [Apache Spark](https://spark.apache.org/)
 
 ## Installation
