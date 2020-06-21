@@ -1,4 +1,4 @@
-# BITE - Basic/IoT/Example
+# BITE - A Basic/IoT/Example
 
 Playing with IoT
 
