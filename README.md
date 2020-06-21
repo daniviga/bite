@@ -145,6 +145,38 @@ DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker-compose.modules.yml up -d
 A simple Arduino UNO sketch is provided in the `arduino/tempLightSensor` folder.
 The sketch reads temperature and light from sensors.
 
+```c
+/* ... */
+
+void loop(void) {
+  const int postDelay = 10 * 1000;
+
+  unsigned int tempReading = analogRead(A0);
+  unsigned int photocellReading = analogRead(A1);
+
+  float tempVoltage = tempReading * AREF_VOLTAGE / 1024.0;
+  float tempC = (tempVoltage - 0.5) * 100 ;
+
+  if (NTPValid) {
+    telemetry["clock"] = timeClient.getEpochTime();
+  } else {
+    telemetry["clock"] = NULL; // converted into 0
+  }
+  payload["light"] = photocellReading;
+
+  temp["celsius"] = tempC;
+  temp["raw"] = tempReading;
+  temp["volts"] = tempVoltage;
+
+#if USE_MQTT
+  publishData(config, telemetry);
+#else
+  postData(config, telemetryURL, telemetry);
+#endif
+
+/* ... */
+```
+
 [Read more ...](./arduino/README.md)
 
 ## Testing
