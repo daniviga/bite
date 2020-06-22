@@ -13,7 +13,7 @@ This project is for educational purposes only. It does not implement any
 authentication and/or encryption protocol, so it is not suitable for real
 production.
 
-![Application Schema](./docs/application_chart.svg)
+![Application Schema](./docs/application_chart.png)
 
 ### Future implementations
 
