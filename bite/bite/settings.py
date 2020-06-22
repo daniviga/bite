@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'health_check.db',
     # 'health_check.storage',
     'rest_framework',
+    'bite',
     'api',
     'telemetry',
 ]

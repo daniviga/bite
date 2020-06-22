@@ -17,13 +17,29 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import json
+from pygments import highlight
+from pygments.lexers import JsonLexer
+from pygments.formatters import HtmlFormatter
+
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 from telemetry.models import Telemetry
 
 
 @admin.register(Telemetry)
 class TelemetryAdmin(admin.ModelAdmin):
-    readonly_fields = ('device', 'transport', 'time', 'clock', 'payload',)
+    fields = ('device', 'transport', 'time', 'clock', 'payload_pp',)
+    readonly_fields = fields
     list_display = ('__str__', 'device')
     list_filter = ('time', 'device__serial')
     search_fields = ('device__serial',)
+
+    def payload_pp(self, instance):
+        response = json.dumps(instance.payload, sort_keys=True, indent=2)
+        formatter = HtmlFormatter(style='colorful')
+        response = highlight(response, JsonLexer(), formatter)
+        style = "<style>" + formatter.get_style_defs() + "</style>"
+        return mark_safe(style + response)
+
+    payload_pp.short_description = 'Payload'
