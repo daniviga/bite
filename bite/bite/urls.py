@@ -34,6 +34,7 @@ Including another URLconf
 """
 
 from django.contrib import admin
+from django.conf import settings
 from django.urls import include, path
 
 from api import urls as api_urls
@@ -45,3 +46,19 @@ urlpatterns = [
     path('api/', include(api_urls)),
     path('telemetry/', include(telemetry_urls)),
 ]
+
+if settings.DEBUG:
+    from django.views.generic import TemplateView
+    from rest_framework.schemas import get_schema_view
+
+    urlpatterns += [
+        path('swagger/', TemplateView.as_view(
+            template_name='swagger.html',
+            extra_context={'schema_url': 'openapi-schema'}
+        ), name='swagger'),
+        path('openapi', get_schema_view(
+            title="BITE - A Basic/IoT/Example",
+            description="BITE API for IoT",
+            version="1.0.0"
+        ), name='openapi-schema'),
+    ]
