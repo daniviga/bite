@@ -48,3 +48,8 @@ jobs:
     env: IOT_TL=mqtt
   - <<: *iot-simulator
     env: IOT_TL=ws
+  - stage: python
+    install:
+      - pip3 -q install flake8
+    script:
+      - flake8 bite --exclude migrations,settings.py
