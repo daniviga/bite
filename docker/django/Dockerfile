@@ -31,11 +31,11 @@ RUN apk update && apk add --no-cache postgresql-libs \
         && wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-alpine-linux-amd64-v0.6.1.tar.gz -qO- \
         | tar -xz -C /usr/local/bin
 COPY --from=builder /usr/local/lib/python3.8/site-packages/ /usr/local/lib/python3.8/site-packages/
-COPY --chown=1000:1000 bite /srv/app/bite
 COPY --chown=1000:1000 requirements.txt /srv/app/bite/requirements.txt
+RUN pip3 install -r /srv/app/bite/requirements.txt
 
-RUN pip3 install -r /srv/app/bite/requirements.txt \
-        && python3 -m compileall -q /srv/app/bite \
+COPY --chown=1000:1000 bite /srv/app/bite
+RUN python3 -m compileall -q /srv/app/bite \
         && mkdir -p /srv/appdata/bite/static \
         && chown -R 1000:1000 /srv/appdata/bite
 
