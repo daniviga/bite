@@ -32,7 +32,7 @@ RUN apk update && apk add --no-cache postgresql-libs \
         | tar -xz -C /usr/local/bin
 COPY --from=builder /usr/local/lib/python3.8/site-packages/ /usr/local/lib/python3.8/site-packages/
 COPY --chown=1000:1000 requirements.txt /srv/app/bite/requirements.txt
-RUN pip3 install -r /srv/app/bite/requirements.txt
+RUN pip3 install --no-cache-dir -r /srv/app/bite/requirements.txt
 
 COPY --chown=1000:1000 bite /srv/app/bite
 RUN python3 -m compileall -q /srv/app/bite \
