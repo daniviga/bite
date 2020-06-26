@@ -57,9 +57,7 @@ class TelemetrySummaryView(APIView):
                 'first_sample': first.time,
                 'last_sample': last.time}
         }
-
         serializer = TelemetrySummarySerializer(data)
-
         return Response(serializer.data)
 
 
