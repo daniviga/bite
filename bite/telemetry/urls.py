@@ -33,14 +33,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from telemetry.views import TelemetryView, TelemetryLatest, TelemetryRange
+from telemetry.views import (TelemetryView, TelemetrySummaryView,
+                             TelemetryLatest, TelemetryRange)
 
 urlpatterns = [
     path('',
          TelemetryView.as_view({'post': 'create'}),
          name='telemetry'),
     path('<str:device>/',
-         TelemetryView.as_view({'get': 'list'}),
+         TelemetrySummaryView.as_view(),
          name='device-telemetry'),
     path('<str:device>/last/',
          TelemetryLatest.as_view({'get': 'retrieve'}),
