@@ -43,7 +43,6 @@ jobs:
     script:
       - docker-compose -f docker/docker-compose.yml exec bite python manage.py test
   - stage: django
-    env: python
     install:
       - pip3 -q install flake8
     script:
