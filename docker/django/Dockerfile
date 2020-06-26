@@ -35,6 +35,7 @@ COPY --chown=1000:1000 bite /srv/app/bite
 COPY --chown=1000:1000 requirements.txt /srv/app/bite/requirements.txt
 
 RUN pip3 install -r /srv/app/bite/requirements.txt \
+        && python3 -m compileall -q /srv/app/bite \
         && mkdir -p /srv/appdata/bite/static \
         && chown -R 1000:1000 /srv/appdata/bite
 

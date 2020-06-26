@@ -42,6 +42,11 @@ jobs:
       - docker-compose -f docker/docker-compose.yml up -d
     script:
       - docker-compose -f docker/docker-compose.yml exec bite python manage.py test
+  - stage: django
+    install:
+      - pip3 -q install flake8
+    script:
+      - flake8 bite --exclude migrations,settings.py
   - <<: *iot-simulator
     env: IOT_TL=http
   - <<: *iot-simulator

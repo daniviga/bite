@@ -22,6 +22,17 @@ from api.models import Device
 from telemetry.models import Telemetry
 
 
+class TelemetryStatsSerializer(serializers.Serializer):
+    count_samples = serializers.IntegerField()
+    first_sample = serializers.DateTimeField()
+    last_sample = serializers.DateTimeField()
+
+
+class TelemetrySummarySerializer(serializers.Serializer):
+    device = serializers.CharField()
+    stats = TelemetryStatsSerializer()
+
+
 class TelemetrySerializer(serializers.ModelSerializer):
     device = serializers.SlugRelatedField(
         slug_field='serial',

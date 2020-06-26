@@ -19,10 +19,12 @@
 
 from datetime import datetime
 from django.http import Http404
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from telemetry.models import Telemetry
-from telemetry.serializers import TelemetrySerializer
+from telemetry.serializers import (TelemetrySerializer,
+                                   TelemetrySummarySerializer)
 from rest_framework.response import Response
 
 
@@ -39,15 +41,36 @@ class TelemetryView(ModelViewSet):
         return Response(serializer.data)
 
 
+class TelemetrySummaryView(APIView):
+    def get(self, request, device, format=None):
+        count = Telemetry.objects.filter(device__serial=device).count()
+        if count == 0:
+            raise Http404
+        first = Telemetry.objects.filter(
+            device__serial=device).order_by('-time')[:1][0]
+        last = Telemetry.objects.filter(
+            device__serial=device).order_by('time')[:1][0]
+        data = {
+            'device': device,
+            'stats': {
+                'count_samples': count,
+                'first_sample': first.time,
+                'last_sample': last.time}
+        }
+        serializer = TelemetrySummarySerializer(data)
+        return Response(serializer.data)
+
+
 class TelemetryRange(ModelViewSet):
     queryset = Telemetry.objects.all()
     serializer_class = TelemetrySerializer
     lookup_field = 'device'
 
     def list(self, request, device, time_from, time_to=None):
+        time_to = datetime.now() if time_to is None else time_to
         queryset = Telemetry.objects.filter(
             device__serial=device,
-            time__range=[time_from, datetime.now()])
+            time__range=[time_from, time_to])
         if not queryset:
             raise Http404
         serializer = TelemetrySerializer(queryset, many=True)
@@ -61,7 +84,7 @@ class TelemetryLatest(ModelViewSet):
 
     def retrieve(self, request, device=None):
         queryset = Telemetry.objects.filter(
-            device__serial=device).order_by('-time')
+            device__serial=device).order_by('-time')[:1]
         if not queryset:
             raise Http404
         serializer = TelemetrySerializer(queryset[0])
