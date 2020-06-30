@@ -47,9 +47,9 @@ class TelemetrySummaryView(APIView):
         if count == 0:
             raise Http404
         first = Telemetry.objects.filter(
-            device__serial=device).order_by('-time')[:1][0]
-        last = Telemetry.objects.filter(
             device__serial=device).order_by('time')[:1][0]
+        last = Telemetry.objects.filter(
+            device__serial=device).order_by('-time')[:1][0]
         data = {
             'device': device,
             'stats': {
