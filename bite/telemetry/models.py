@@ -20,7 +20,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
-from django.contrib.postgres.fields import JSONField
 
 from api.models import Device
 
@@ -39,7 +38,7 @@ class Telemetry(models.Model):
     clock = models.IntegerField(
         validators=[MinValueValidator(0)],
         null=True)
-    payload = JSONField(validators=[telemetry_validation])
+    payload = models.JSONField(validators=[telemetry_validation])
 
     class Meta:
         ordering = ['-time', 'device']
