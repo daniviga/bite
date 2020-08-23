@@ -26,12 +26,12 @@ class ApiTestCase(TestCase):
     c = Client()
 
     payload = {
-        'id': 'sensor.server.domain',
-        'light': 434,
-        'temperature': {
-            'celsius': 27.02149,
-            'raw': 239,
-            'volts': 0.770215
+        "id": "sensor.server.domain",
+        "light": 434,
+        "temperature": {
+            "celsius": 27.02149,
+            "raw": 239,
+            "volts": 0.770215
         }
     }
 
@@ -69,4 +69,4 @@ class ApiTestCase(TestCase):
         self.assertEqual(
             response.json()['transport'], 'http')
         self.assertJSONEqual(
-            json.dumps(response.json()['payload']), self.payload)
+            response.json()['payload'], self.payload)
