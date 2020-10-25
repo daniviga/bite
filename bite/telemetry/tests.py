@@ -69,4 +69,5 @@ class ApiTestCase(TestCase):
         self.assertEqual(
             response.json()['transport'], 'http')
         self.assertJSONEqual(
-            response.json()['payload'], self.payload)
+            json.dumps(response.json()['payload']),
+            json.dumps(self.payload))
