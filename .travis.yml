@@ -18,7 +18,7 @@ _iot-simulator: &iot-simulator
       - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/edge/docker-compose.modules.yml pull
       - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/edge/docker-compose.modules.yml build
     script:
-      - sleep 5  # warm-up
+      - sleep 30  # warm-up
       - sed -i 's/# IOT_SERIAL/IOT_SERIAL/g' docker/edge/docker-compose.modules.yml
       - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/edge/docker-compose.modules.yml up -d
       - sleep 30  # collect some telemetry
