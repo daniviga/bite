@@ -54,7 +54,7 @@ services:
 
   broker:
     <<: *service_default
-    image: eclipse-mosquitto
+    image: eclipse-mosquitto:1.6
     volumes:
       - "./mqtt/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf"
     networks:
@@ -65,6 +65,8 @@ services:
   ingress:
     <<: *service_default
     image: nginx:stable-alpine
+    environment:
+      NGINX_ENTRYPOINT_QUIET_LOGS: 1
     ports:
       - "${CUSTOM_DOCKER_IP:-0.0.0.0}:80:80"
     networks:

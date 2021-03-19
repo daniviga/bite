@@ -30,8 +30,9 @@ def telemetry_validation(value):
 
 
 class Telemetry(models.Model):
+    id = models.AutoField(primary_key=True)
     device = models.ForeignKey(Device, on_delete=models.CASCADE)
-    time = models.DateTimeField(primary_key=True, auto_now_add=True)
+    time = models.DateTimeField(db_index=True, auto_now_add=True)
     transport = models.CharField(max_length=4,
                                  choices=[('http', 'http'), ('mqtt', 'mqtt')],
                                  default='http')

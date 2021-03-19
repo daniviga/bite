@@ -40,6 +40,10 @@ services:
     volumes:
       - ../bite:/srv/app/bite
 
+  static-files:
+    volumes:
+      - ../bite:/srv/app/bite
+
   mqtt-to-db:
     volumes:
       - ../bite:/srv/app/bite

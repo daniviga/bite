@@ -37,7 +37,7 @@ def device_validation(value):
 
 
 class WhiteList(models.Model):
-    serial = models.CharField(max_length=128, unique=True)
+    serial = models.CharField(primary_key=True, max_length=128)
     creation_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
     is_published = models.BooleanField(default=True)
@@ -52,7 +52,7 @@ class WhiteList(models.Model):
 class Device(models.Model):
     serial = models.CharField(max_length=128, unique=True,
                               validators=[device_validation])
-    uuid = models.UUIDField(unique=True, default=uuid.uuid4,
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
                             editable=False)
     creation_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)

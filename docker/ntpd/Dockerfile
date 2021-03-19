@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FROM alpine:3.9
+FROM alpine:3.12
 
 RUN apk update && apk add chrony && \
     chown -R chrony:chrony /var/lib/chrony
