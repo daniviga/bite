@@ -17,8 +17,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime
 from django.http import Http404
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
@@ -26,6 +27,7 @@ from telemetry.models import Telemetry
 from telemetry.serializers import (TelemetrySerializer,
                                    TelemetrySummarySerializer)
 from rest_framework.response import Response
+from rest_framework.exceptions import ParseError
 
 
 class TelemetryView(ModelViewSet):
@@ -66,8 +68,21 @@ class TelemetryRange(ModelViewSet):
     serializer_class = TelemetrySerializer
     lookup_field = 'device'
 
+    @staticmethod
+    def datetime_validation(datetime):
+        parsed_datetime = parse_datetime(datetime)
+        if parsed_datetime is None:
+            raise ParseError({
+                datetime: 'Invalid date format'
+            })
+        return timezone.make_aware(parsed_datetime)
+
     def list(self, request, device, time_from, time_to=None):
-        time_to = datetime.now() if time_to is None else time_to
+        time_from = self.datetime_validation(time_from)
+        time_to = (
+            timezone.now() if time_to is None else
+            self.datetime_validation(time_to)
+        )
         queryset = Telemetry.objects.filter(
             device__serial=device,
             time__range=[time_from, time_to])
