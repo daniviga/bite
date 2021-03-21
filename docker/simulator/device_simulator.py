@@ -3,7 +3,7 @@
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 #
 # BITE - A Basic/IoT/Example
-# Copyright (C) 2020 Daniele Viganò <daniele@vigano.me>
+# Copyright (C) 2020-2021 Daniele Viganò <daniele@vigano.me>
 #
 # BITE is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
