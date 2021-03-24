@@ -18,7 +18,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <EEPROM.h>
+#include <Preferences.h>
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include <PubSubClient.h>
@@ -33,6 +33,8 @@
 // const String serverName = "sensor.server.domain";
 const size_t capacity = 2 * JSON_OBJECT_SIZE(3) + JSON_OBJECT_SIZE(2) + 20;
 
+Preferences preferences;
+
 DynamicJsonDocument telemetry(capacity);
 JsonObject payload = telemetry.createNestedObject("payload");
 
@@ -45,20 +47,12 @@ bool NTPValid = false;
 WiFiClient ethClient;
 PubSubClient clientMQTT(ethClient);
 
-const char* ssid = "";
-const char* password = "";
-const char* serial = "esp32_1";
-
 struct netConfig {
   IPAddress address;
   unsigned int port;
-};
+} config;
 
-netConfig config = {
-  {192, 168, 10, 123},
-  80
-};
-
+char* serial;
 const String apiURL = "/api/device/subscribe/";
 const String telemetryURL = "/telemetry/";
 
@@ -67,22 +61,32 @@ void setup(void) {
 
   StaticJsonDocument<64> api;
 
-  /*
-  int eeAddress = 0;
+  preferences.begin("iot");
+  // Get the serial number from flash
+  serial = strdup(preferences.getString("serial").c_str());
 
-  EEPROM.get(eeAddress, serial);
-  eeAddress += sizeof(serial);
-  EEPROM.get(eeAddress, config);
-  */
+  // Get network configuration
+  size_t _len = preferences.getBytesLength("config");
+  char _buffer[_len];
+  preferences.getBytes("config", &_buffer, _len);
+  memcpy(&config, _buffer, _len);
+  preferences.end();
 
-  Serial.println("Starting connecting WiFi.");
+  // Get WiFi parameters
+  preferences.begin("wifi");
+  const char* _ssid = strdup(preferences.getString("ssid").c_str());
+  const char* _password = strdup(preferences.getString("password").c_str());
+  preferences.end();
+
+  Serial.print("Starting connecting WiFi to ");
+  Serial.print(_ssid);
   delay(10);
-  WiFi.begin(ssid, password);
+  WiFi.begin(_ssid, _password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
-  Serial.println("WiFi connected");
+  Serial.println("\nWiFi connected");
 
   Serial.print("IoT #");
   Serial.print(serial);
@@ -90,7 +94,7 @@ void setup(void) {
   Serial.println(WiFi.localIP());
   Serial.println();
   Serial.print("Connecting to: ");
-  Serial.print(config.address);
+  Serial.print(config.address.toString());
   Serial.print(":");
   Serial.print(config.port);
   Serial.print(" every ");
@@ -173,7 +177,7 @@ void postData(const netConfig &postAPI, const String &URL, const DynamicJsonDocu
     ethClient.print(URL);
     ethClient.println(" HTTP/1.1");
     ethClient.print("Host: ");
-    ethClient.print(postAPI.address);
+    ethClient.print(postAPI.address.toString());
     ethClient.print(":");
     ethClient.println(postAPI.port);
     ethClient.println("Content-Type: application/json");

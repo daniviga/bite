@@ -18,16 +18,17 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <EEPROM.h>
+#include <Preferences.h>
 #include <Ethernet.h>
 #include "settings.h"
 
-#define ERASE_FIRST 0
+#define ERASE_FIRST 1
 
-const byte mac[] = {
-  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
-};
-const char serial[] = SERIAL;
+Preferences preferences;
+const char* serial = SERIAL;
+
+const char* ssid = SECRET_SSID;
+const char* password = SECRET_PASSWORD;
 
 struct netConfig {
   IPAddress address = REMOTE_IP;
@@ -36,32 +37,37 @@ struct netConfig {
 
 void setup() {
 
-  Serial.begin(9600);
+  Serial.begin(115200);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
+  preferences.begin("iot", false);
 #if ERASE_FIRST
-  // initialize the LED pin as an output.
-  pinMode(13, OUTPUT);
-  // turn the LED on while erasing
-  digitalWrite(13, HIGH);
-  for (int i = 0 ; i < EEPROM.length() ; i++) {
-    EEPROM.write(i, 0);
-  }
-  // turn the LED on when we're done
-  digitalWrite(13, LOW);
+  Serial.println("Erasing IoT data");
+  preferences.clear();
 #endif
+  Serial.print("Writing IoT data");
+  preferences.putString("serial", serial);
+  Serial.print(".");
+  Serial.println(".");
 
-  int eeAddress = 0;   //Location we want the data to be put.
+  preferences.putBytes("config", &config, sizeof(config));
+  Serial.println("Committing...");
+  preferences.end();
+  Serial.println("IoT data written!");
 
-  EEPROM.put(eeAddress, mac);
-  eeAddress += sizeof(mac);
-  EEPROM.put(eeAddress, serial);
-  eeAddress += sizeof(serial);
-
-  EEPROM.put(eeAddress, config);
-  Serial.println("Data written!");
+  preferences.begin("wifi", false);
+#if ERASE_FIRST
+  Serial.println("Erasing WiFI data");
+  preferences.clear();
+#endif
+  Serial.println("Writing WiFi data");
+  preferences.putString("ssid", ssid);
+  preferences.putString("password", password);
+  Serial.println("Committing...");
+  preferences.end();
+  Serial.println("WiFi data written!");
 }
 
 void loop() {
