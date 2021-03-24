@@ -18,78 +18,83 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <EEPROM.h>
-#include <Ethernet.h>
-#include <EthernetUdp.h>
+#include <Preferences.h>
+#include <WiFi.h>
+#include <WiFiUdp.h>
 #include <PubSubClient.h>
 #include <NTPClient.h>
 #include <ArduinoJson.h>
 
-#define DEBUG_TO_SERIAL   0   // debug on serial port
+#define DEBUG_TO_SERIAL   1   // debug on serial port
 #define USE_MQTT          1   // use mqtt protocol instead of http post
 #define USE_INTERNAL_NTP  1   // use default ntp server or the internal one
 #define TELEMETRY_DELAY  10   // second between telemetry samples
-#define AREF_VOLTAGE      3.3 // set aref voltage to 3.3v instead of default 5v
-
-char serial[9];
 
 // const String serverName = "sensor.server.domain";
 const size_t capacity = 2 * JSON_OBJECT_SIZE(3) + JSON_OBJECT_SIZE(2) + 20;
 
+Preferences preferences;
+
 DynamicJsonDocument telemetry(capacity);
 JsonObject payload = telemetry.createNestedObject("payload");
-JsonObject temp = payload.createNestedObject("temperature");
 
 unsigned int counter = 0;
 
-EthernetUDP ntpUDP;
+WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
 bool NTPValid = false;
 
-EthernetClient ethClient;
+WiFiClient ethClient;
 PubSubClient clientMQTT(ethClient);
 
 struct netConfig {
   IPAddress address;
   unsigned int port;
-};
-netConfig config;
+} config;
 
+char* serial;
 const String apiURL = "/api/device/subscribe/";
 const String telemetryURL = "/telemetry/";
 
 void setup(void) {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
-  analogReference(EXTERNAL);
+  StaticJsonDocument<64> api;
 
-  StaticJsonDocument<20> api;
+  preferences.begin("iot");
+  // Get the serial number from flash
+  serial = strdup(preferences.getString("serial").c_str());
 
-  byte mac[6];
-  int eeAddress = 0;
+  // Get network configuration
+  size_t _len = preferences.getBytesLength("config");
+  char _buffer[_len];
+  preferences.getBytes("config", &_buffer, _len);
+  memcpy(&config, _buffer, _len);
+  preferences.end();
 
-  EEPROM.get(eeAddress, mac);
-  eeAddress += sizeof(mac);
-  EEPROM.get(eeAddress, serial);
-  eeAddress += sizeof(serial);
+  // Get WiFi parameters
+  preferences.begin("wifi");
+  const char* _ssid = strdup(preferences.getString("ssid").c_str());
+  const char* _password = strdup(preferences.getString("password").c_str());
+  preferences.end();
 
-  if (Ethernet.begin(mac) == 0) {
-    if (Ethernet.hardwareStatus() == EthernetNoHardware) {
-      Serial.println("ERROR: ethernet shield was not found.");
-    }
-    while (true) {
-      delay(1);
-    }
+  Serial.print("Starting connecting WiFi to ");
+  Serial.print(_ssid);
+  delay(10);
+  WiFi.begin(_ssid, _password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
   }
-  EEPROM.get(eeAddress, config);
+  Serial.println("\nWiFi connected");
 
   Serial.print("IoT #");
   Serial.print(serial);
   Serial.print(" at address: ");
-  Serial.println(Ethernet.localIP());
+  Serial.println(WiFi.localIP());
   Serial.println();
   Serial.print("Connecting to: ");
-  Serial.print(config.address);
+  Serial.print(config.address.toString());
   Serial.print(":");
   Serial.print(config.port);
   Serial.print(" every ");
@@ -122,22 +127,14 @@ void setup(void) {
 void loop(void) {
   const int postDelay = TELEMETRY_DELAY * 1000;
 
-  unsigned int tempReading = analogRead(A0);
-  unsigned int photocellReading = analogRead(A1);
-
-  float tempVoltage = tempReading * AREF_VOLTAGE / 1024.0;
-  float tempC = (tempVoltage - 0.5) * 100 ;
-
   if (NTPValid) {
     telemetry["clock"] = timeClient.getEpochTime();
   } else {
     telemetry["clock"] = NULL; // converted into 0
   }
-  payload["light"] = photocellReading;
 
-  temp["celsius"] = tempC;
-  temp["raw"] = tempReading;
-  temp["volts"] = tempVoltage;
+  payload["hall"] = hallRead();
+  payload["wifi-rssi"] = WiFi.RSSI();
 
 #if USE_MQTT
   publishData(config, telemetry);
@@ -180,7 +177,7 @@ void postData(const netConfig &postAPI, const String &URL, const DynamicJsonDocu
     ethClient.print(URL);
     ethClient.println(" HTTP/1.1");
     ethClient.print("Host: ");
-    ethClient.print(postAPI.address);
+    ethClient.print(postAPI.address.toString());
     ethClient.print(":");
     ethClient.println(postAPI.port);
     ethClient.println("Content-Type: application/json");
