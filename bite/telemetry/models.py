@@ -30,7 +30,6 @@ def telemetry_validation(value):
 
 
 class Telemetry(models.Model):
-    id = models.AutoField(primary_key=True)
     device = models.ForeignKey(Device, on_delete=models.CASCADE)
     time = models.DateTimeField(db_index=True, auto_now_add=True)
     transport = models.CharField(max_length=4,
@@ -43,6 +42,7 @@ class Telemetry(models.Model):
 
     class Meta:
         ordering = ['-time', 'device']
+        unique_together = ['time', 'device']
         verbose_name_plural = "Telemetry"
 
     def __str__(self):
