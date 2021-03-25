@@ -11,10 +11,10 @@ class Migration(migrations.Migration):
 
     # Timescale requires an hyperscale table to have the field used for the
     # partitioning ('time') to be in the any UNIQUE constraint.
-    # Because of that we have a unique_together on 'time' and 'device_id',
+    # Because of that we have a unique_together on 'time' and 'device',
     # however Django always adds an 'id' as PRIMARY_KEY.
     # Django's 'id' isn't used as a foreign key, so we are dropping
-    # the contraint and simply adding an index to the 'id' columns.
+    # the contraint and simply adding an index to the 'id' column.
     # We can now create the hypertable.
     operations = [
         migrations.RunSQL(
