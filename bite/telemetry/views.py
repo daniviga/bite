@@ -17,9 +17,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from django.http import Http404
 from django.utils import timezone
-from django.utils.dateparse import parse_datetime
+from django.utils.dateparse import parse_date, parse_datetime
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
@@ -69,12 +70,16 @@ class TelemetryRange(ModelViewSet):
     lookup_field = 'device'
 
     @staticmethod
-    def datetime_validation(datetime):
-        parsed_datetime = parse_datetime(datetime)
+    def datetime_validation(time):
+        parsed_datetime = parse_datetime(time)
         if parsed_datetime is None:
-            raise ParseError({
-                datetime: 'Invalid date format'
-            })
+            parsed_datetime = parse_date(time)
+            if parsed_datetime is None:
+                raise ParseError({
+                    datetime: 'Invalid date format'
+                })
+            parsed_datetime = datetime.combine(
+                parsed_datetime, datetime.min.time())
         return timezone.make_aware(parsed_datetime)
 
     def list(self, request, device, time_from, time_to=None):
