@@ -4,7 +4,7 @@ Playing with IoT
 
 [![Build Status](https://travis-ci.com/daniviga/bite.svg?branch=master)](https://travis-ci.com/daniviga/bite)
 ![AGPLv3](./docs/.badges/agpl3.svg)
-![Python 3.8+](./docs/.badges/python.svg)
+![Python 3.9](./docs/.badges/python.svg)
 ![MQTT](./docs/.badges/mqtt.svg)
 ![Moby](./docs/.badges/moby.svg)
 ![docker-compose 3.7+](./docs/.badges/docker-compose.svg)
