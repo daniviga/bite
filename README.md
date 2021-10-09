@@ -24,12 +24,23 @@ production.
 
 ### Requirements
 
-- `docker-ce` or `moby`
+- `moby-engine` or `podman-docker` (recommended)
 - `docker-compose`
 
 The project is compatible with Docker for Windows (using Linux executors),
 but it is advised to directly use a minimal Linux VM instead
 (via the preferred hypervisor).
+
+### Podman
+
+`podman`, with `podman-docker` is the recommended way to run BITE, in rootless mode.
+
+```bash
+systemctl start --user podman.socket
+export DOCKER_HOST=unix://run/user/$UID/podman/podman.sock
+```
+
+### Application stack
 
 The application stack is composed by the following components:
 
