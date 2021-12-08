@@ -39,7 +39,7 @@ services:
     networks:
       - net
     ports:
-      - "${CUSTOM_DOCKER_IP:-0.0.0.0}:123:123/udp"
+      - "${CUSTOM_DOCKER_IP:-0.0.0.0}:1230:123/udp"  # PORT 123 CAN BE USED WHEN RUNNING AS PRIVILEGED USER
 
   timescale:
     <<: *service_default
@@ -68,11 +68,11 @@ services:
     environment:
       NGINX_ENTRYPOINT_QUIET_LOGS: 1
     ports:
-      - "${CUSTOM_DOCKER_IP:-0.0.0.0}:80:80"
+      - "${CUSTOM_DOCKER_IP:-0.0.0.0}:8080:80"  # PORT 80 CAN BE USED WHEN RUNNING AS PRIVILEGED USER
     networks:
       - net
     volumes:
-      - "staticdata:/srv/appdata/bite/static:U"
+      - "staticdata:/srv/appdata/bite/static:U"  # REMOVE ':U' ON MOBY/DOCKER
       - "./ingress/nginx.conf:/etc/nginx/nginx.conf"
 
 
@@ -101,7 +101,7 @@ services:
   static-files:
     image: daniviga/bite
     volumes:
-      - "staticdata:/srv/appdata/bite/static:U"
+      - "staticdata:/srv/appdata/bite/static:U"  # REMOVE ':U' ON MOBY/DOCKER
     command: ["python3", "manage.py", "collectstatic", "--noinput"]
 
   mqtt-to-db:
