@@ -31,8 +31,6 @@
 #define TELEMETRY_DELAY  10   // second between telemetry samples
 #define AREF_VOLTAGE      3.3 // set aref voltage to 3.3v instead of default 5v
 
-char serial[9];
-
 // const String serverName = "sensor.server.domain";
 const size_t capacity = 2 * JSON_OBJECT_SIZE(3) + JSON_OBJECT_SIZE(2) + 20;
 
@@ -50,11 +48,13 @@ EthernetClient ethClient;
 PubSubClient clientMQTT(ethClient);
 
 struct netConfig {
-  IPAddress address;
-  unsigned int port;
-};
-netConfig config;
+  IPAddress iot_address;
+  unsigned int iot_port;
+  IPAddress ntp_address;
+  unsigned int ntp_port;
+} config;
 
+char serial[9];
 const String apiURL = "/api/device/subscribe/";
 const String telemetryURL = "/telemetry/";
 
@@ -89,15 +89,17 @@ void setup(void) {
   Serial.println(Ethernet.localIP());
   Serial.println();
   Serial.print("Connecting to: ");
-  Serial.print(config.address);
+  Serial.print(config.iot_address);
   Serial.print(":");
-  Serial.print(config.port);
+  Serial.print(config.iot_port);
   Serial.print(" every ");
   Serial.print(TELEMETRY_DELAY);
   Serial.println("s");
 
 #if USE_INTERNAL_NTP
-  timeClient.setPoolServerIP(config.address);
+  Serial.print("Using NTP: ");
+  Serial.println(config.ntp_address);
+  timeClient.setPoolServerIP(config.ntp_address);
 #endif
   timeClient.begin();
   if (timeClient.update()) {
@@ -115,7 +117,7 @@ void setup(void) {
   // payload["id"] = serverName;
 
 #if USE_MQTT
-  clientMQTT.setServer(config.address, 1883);
+  clientMQTT.setServer(config.iot_address, 1883);
 #endif
 }
 
@@ -175,14 +177,14 @@ void publishData(const netConfig &mqtt, const DynamicJsonDocument &json) {
 #endif
 
 void postData(const netConfig &postAPI, const String &URL, const DynamicJsonDocument &json) {
-  if (ethClient.connect(postAPI.address, postAPI.port)) {
+  if (ethClient.connect(postAPI.iot_address, postAPI.iot_port)) {
     ethClient.print("POST ");
     ethClient.print(URL);
     ethClient.println(" HTTP/1.1");
     ethClient.print("Host: ");
-    ethClient.print(postAPI.address);
+    ethClient.print(postAPI.iot_address);
     ethClient.print(":");
-    ethClient.println(postAPI.port);
+    ethClient.println(postAPI.iot_port);
     ethClient.println("Content-Type: application/json");
     ethClient.print("Content-Length: ");
     ethClient.println(measureJson(json));
