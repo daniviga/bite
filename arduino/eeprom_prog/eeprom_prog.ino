@@ -30,8 +30,10 @@ const byte mac[] = {
 const char serial[] = SERIAL;
 
 struct netConfig {
-  IPAddress address = REMOTE_IP;
-  unsigned int port = REMOTE_PORT;
+  IPAddress iot_address = IOT_IP;
+  unsigned int iot_port = IOT_PORT;
+  IPAddress ntp_address = NTP_IP;
+  unsigned int ntp_port = NTP_PORT;
 } config;
 
 void setup() {
