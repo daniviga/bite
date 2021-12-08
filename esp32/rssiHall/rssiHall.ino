@@ -51,7 +51,7 @@ struct netConfig {
   IPAddress iot_address;
   unsigned int iot_port;
   IPAddress ntp_address;
-  unsigned int ntp_port;
+  unsigned int ntp_port;  // not used
 } config;
 
 char* serial;
