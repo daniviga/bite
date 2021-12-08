@@ -43,7 +43,7 @@ services:
 
   timescale:
     <<: *service_default
-    image: timescale/timescaledb:latest-pg12
+    image: timescale/timescaledb:latest-pg14
     environment:
       POSTGRES_USER: "bite"
       POSTGRES_PASSWORD: "password"
