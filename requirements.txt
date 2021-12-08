@@ -1,3 +1,4 @@
+pytz
 Django
 djangorestframework
 django-health-check
