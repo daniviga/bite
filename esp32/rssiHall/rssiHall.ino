@@ -48,8 +48,10 @@ WiFiClient ethClient;
 PubSubClient clientMQTT(ethClient);
 
 struct netConfig {
-  IPAddress address;
-  unsigned int port;
+  IPAddress iot_address;
+  unsigned int iot_port;
+  IPAddress ntp_address;
+  unsigned int ntp_port;
 } config;
 
 char* serial;
@@ -94,15 +96,17 @@ void setup(void) {
   Serial.println(WiFi.localIP());
   Serial.println();
   Serial.print("Connecting to: ");
-  Serial.print(config.address.toString());
+  Serial.print(config.iot_address.toString());
   Serial.print(":");
-  Serial.print(config.port);
+  Serial.print(config.iot_port);
   Serial.print(" every ");
   Serial.print(TELEMETRY_DELAY);
   Serial.println("s");
 
 #if USE_INTERNAL_NTP
-  timeClient.setPoolServerIP(config.address);
+  Serial.print("Using NTP: ");
+  Serial.println(config.ntp_address.toString());
+  timeClient.setPoolServerIP(config.ntp_address);
 #endif
   timeClient.begin();
   if (timeClient.update()) {
@@ -120,7 +124,7 @@ void setup(void) {
   // payload["id"] = serverName;
 
 #if USE_MQTT
-  clientMQTT.setServer(config.address, 1883);
+  clientMQTT.setServer(config.iot_address, 1883);
 #endif
 }
 
@@ -172,14 +176,14 @@ void publishData(const netConfig &mqtt, const DynamicJsonDocument &json) {
 #endif
 
 void postData(const netConfig &postAPI, const String &URL, const DynamicJsonDocument &json) {
-  if (ethClient.connect(postAPI.address, postAPI.port)) {
+  if (ethClient.connect(postAPI.iot_address, postAPI.iot_port)) {
     ethClient.print("POST ");
     ethClient.print(URL);
     ethClient.println(" HTTP/1.1");
     ethClient.print("Host: ");
-    ethClient.print(postAPI.address.toString());
+    ethClient.print(postAPI.iot_address.toString());
     ethClient.print(":");
-    ethClient.println(postAPI.port);
+    ethClient.println(postAPI.iot_port);
     ethClient.println("Content-Type: application/json");
     ethClient.print("Content-Length: ");
     ethClient.println(measureJson(json));
