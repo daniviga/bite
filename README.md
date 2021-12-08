@@ -35,6 +35,21 @@ but it is advised to directly use a minimal Linux VM instead
 
 `podman`, with `podman-docker` is the recommended way to run BITE, in rootless mode.
 
+Requirements are:
+
+- `podman`
+- `podman-docker`
+- `catatonit`
+- `docker-compose`
+
+On Fedora 33+:
+
+```bash
+sudo dnf install -y podman podman-docker catatonit docker-compose
+```
+
+To setup `podman` run:
+
 ```bash
 systemctl start --user podman.socket
 export DOCKER_HOST=unix://run/user/$UID/podman/podman.sock
