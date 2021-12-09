@@ -24,7 +24,7 @@ services:
     image: docker:dind
     privileged: true
     environment:
-      DOCKER_TLS_CERTDIR:
+      DOCKER_TLS_CERTDIR: ""
     networks:
       - net
     ports:
