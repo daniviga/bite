@@ -44,6 +44,10 @@ services:
     volumes:
       - ../bite:/srv/app/bite
 
-  mqtt-to-db:
+  dispatcher:
+    volumes:
+      - ../bite:/srv/app/bite
+
+  handler:
     volumes:
       - ../bite:/srv/app/bite

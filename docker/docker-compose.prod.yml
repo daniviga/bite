@@ -29,6 +29,10 @@ services:
     volumes:
       - ./django/production.py.sample:/srv/app/bite/bite/production.py
 
-  mqtt-to-db:
+  dispatcher:
+    volumes:
+      - ./django/production.py.sample:/srv/app/bite/bite/production.py
+
+  handler:
     volumes:
       - ./django/production.py.sample:/srv/app/bite/bite/production.py

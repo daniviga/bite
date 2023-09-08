@@ -104,13 +104,21 @@ services:
       - staticdata:/srv/appdata/bite/static
     command: ["python3", "manage.py", "collectstatic", "--noinput"]
 
-  mqtt-to-db:
+  dispatcher:
     <<: *service_default
     image: daniviga/bite
-    command: ["python3", "manage.py", "mqtt-to-db"]
+    command: ["python3", "manage.py", "dispatcher"]
+    networks:
+      - net
+    depends_on:
+      - broker
+
+  handler:
+    <<: *service_default
+    image: daniviga/bite
+    command: ["python3", "manage.py", "handler"]
     networks:
       - net
     depends_on:
       - data-migration
       - timescale
-      - broker
