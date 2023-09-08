@@ -29,12 +29,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from api.models import Device
 from telemetry.models import Telemetry
 
-MQTT_HOST = settings.MQTT_BROKER['HOST']
-MQTT_PORT = int(settings.MQTT_BROKER['PORT'])
-
 
 class Command(BaseCommand):
     help = 'MQTT to DB deamon'
+
+    KAFKA_HOST = settings.KAFKA_BROKER['HOST']
+    KAFKA_PORT = int(settings.KAFKA_BROKER['PORT'])
 
     def get_device(self, serial):
         try:
@@ -56,7 +56,9 @@ class Command(BaseCommand):
                 consumer = KafkaConsumer(
                     "telemetry",
                     value_deserializer=lambda m: json.loads(m.decode('utf8')),
-                    bootstrap_servers='localhost:9092'
+                    bootstrap_servers='{}:{}'.format(
+                        self.KAFKA_HOST, self.KAFKA_PORT
+                    ),
                 )
                 break
             except NoBrokersAvailable:

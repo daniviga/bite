@@ -39,6 +39,8 @@ class Command(BaseCommand):
 
     MQTT_HOST = settings.MQTT_BROKER['HOST']
     MQTT_PORT = int(settings.MQTT_BROKER['PORT'])
+    KAFKA_HOST = settings.KAFKA_BROKER['HOST']
+    KAFKA_PORT = int(settings.KAFKA_BROKER['PORT'])
     producer = None
 
     @sync_to_async
@@ -85,7 +87,9 @@ class Command(BaseCommand):
         while True:
             try:
                 self.producer = KafkaProducer(
-                    bootstrap_servers='localhost:9092',
+                    bootstrap_servers='{}:{}'.format(
+                        self.KAFKA_HOST, self.KAFKA_PORT
+                    ),
                     value_serializer=lambda v: json.dumps(v).encode('utf-8'),
                     retries=5
                 )

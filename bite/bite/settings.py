@@ -158,6 +158,11 @@ MQTT_BROKER = {
     'PORT': '1883',
 }
 
+KAFKA_BROKER = {
+    'HOST': 'kafka',
+    'PORT': '9092',
+}
+
 # If no local_settings.py is availble in the current folder let's try to
 # load it from the application root
 try:
