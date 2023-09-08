@@ -4,3 +4,4 @@ ipython
 flake8
 pyinstrument
 django-debug-toolbar
+urllib3
