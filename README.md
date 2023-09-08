@@ -4,7 +4,7 @@ Playing with IoT
 
 [![Build Status](https://travis-ci.com/daniviga/bite.svg?branch=master)](https://travis-ci.com/daniviga/bite)
 ![AGPLv3](./docs/.badges/agpl3.svg)
-![Python 3.9](./docs/.badges/python.svg)
+![Python 3.11](./docs/.badges/python.svg)
 ![MQTT](./docs/.badges/mqtt.svg)
 ![Moby](./docs/.badges/moby.svg)
 ![docker-compose 3.7+](./docs/.badges/docker-compose.svg)
@@ -12,13 +12,6 @@ Playing with IoT
 This project is for educational purposes only. It does not implement any
 authentication and/or encryption protocol, so it is not suitable for real
 production.
-
-![Application Schema](./docs/application_chart.png)
-
-### Future implementations
-
-- Broker HA via [VerneMQ clustering](https://docs.vernemq.com/clustering/introduction)
-- Stream analytics via [Apache Spark](https://spark.apache.org/)
 
 ## Installation
 
@@ -36,8 +29,10 @@ The application stack is composed by the following components:
 - [Django](https://www.djangoproject.com/) with
 [Django REST framework](https://www.django-rest-framework.org/)
 web application (running via `gunicorn` in production mode)
-  - `mqtt-to-db` custom daemon to dump telemetry into the timeseries database
+  - `dispatcher` custom daemon to dump telemetry into the Kafka queue
+  - `handler` custom daemon to dump telemetry into the timeseries database from the Kafka queue
   - telemetry payload is stored as json object (via PostgreSQL JSON data type)
+- [Kafka](https://kafka.apache.org/) broker
 - [Timescale](https://www.timescale.com/) DB,
 a [PostgreSQL](https://www.postgresql.org/) database with a timeseries extension
 - [Mosquitto](https://mosquitto.org/) MQTT broker (see alternatives below)

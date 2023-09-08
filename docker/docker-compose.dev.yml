@@ -36,6 +36,10 @@ services:
     ports:
         - "${CUSTOM_DOCKER_IP:-0.0.0.0}:8000:8000"
 
+  kafka:
+    ports:
+        - "${CUSTOM_DOCKER_IP:-0.0.0.0}:9092:9092"
+
   data-migration:
     volumes:
       - ../bite:/srv/app/bite
@@ -44,6 +48,10 @@ services:
     volumes:
       - ../bite:/srv/app/bite
 
-  mqtt-to-db:
+  dispatcher:
+    volumes:
+      - ../bite:/srv/app/bite
+
+  handler:
     volumes:
       - ../bite:/srv/app/bite

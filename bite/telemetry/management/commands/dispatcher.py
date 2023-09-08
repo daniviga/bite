@@ -22,22 +22,26 @@ import asyncio
 import json
 import time
 import paho.mqtt.client as mqtt
+from kafka import KafkaProducer
+from kafka.errors import NoBrokersAvailable
 from asgiref.sync import sync_to_async
-from asyncio_mqtt import Client
+from aiomqtt import Client
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 
 from api.models import Device
-from telemetry.models import Telemetry
-
-MQTT_HOST = settings.MQTT_BROKER['HOST']
-MQTT_PORT = int(settings.MQTT_BROKER['PORT'])
 
 
 class Command(BaseCommand):
     help = 'MQTT to DB deamon'
+
+    MQTT_HOST = settings.MQTT_BROKER['HOST']
+    MQTT_PORT = int(settings.MQTT_BROKER['PORT'])
+    KAFKA_HOST = settings.KAFKA_BROKER['HOST']
+    KAFKA_PORT = int(settings.KAFKA_BROKER['PORT'])
+    producer = None
 
     @sync_to_async
     def get_device(self, serial):
@@ -47,24 +51,23 @@ class Command(BaseCommand):
             return None
 
     @sync_to_async
-    def store_telemetry(self, device, payload):
-        Telemetry.objects.create(
-            device=device,
-            transport='mqtt',
-            clock=payload['clock'],
-            payload=payload['payload']
+    def dispatch(self, message):
+        self.producer.send(
+            'telemetry', {"transport": 'mqtt',
+                          "body": message}
         )
 
     async def mqtt_broker(self):
-        async with Client(MQTT_HOST, port=MQTT_PORT) as client:
+        async with Client(self.MQTT_HOST, port=self.MQTT_PORT) as client:
             # use shared subscription for HA/balancing
             await client.subscribe("$share/telemetry/#")
-            async with client.unfiltered_messages() as messages:
+            async with client.messages() as messages:
                 async for message in messages:
-                    payload = json.loads(message.payload.decode('utf-8'))
                     device = await self.get_device(message.topic)
                     if device is not None:
-                        await self.store_telemetry(device, payload)
+                        message_body = json.loads(
+                            message.payload.decode('utf-8'))
+                        await self.dispatch(message_body)
                     else:
                         self.stdout.write(
                             self.style.ERROR(
@@ -74,13 +77,28 @@ class Command(BaseCommand):
         client = mqtt.Client()
         while True:
             try:
-                client.connect(MQTT_HOST, MQTT_PORT)
+                client.connect(self.MQTT_HOST, self.MQTT_PORT)
                 break
             except (socket.gaierror, ConnectionRefusedError):
                 self.stdout.write(
-                    self.style.WARNING('WARNING: Broker not available'))
+                    self.style.WARNING('WARNING: MQTT broker not available'))
                 time.sleep(5)
 
-        self.stdout.write(self.style.SUCCESS('INFO: Broker subscribed'))
+        while True:
+            try:
+                self.producer = KafkaProducer(
+                    bootstrap_servers='{}:{}'.format(
+                        self.KAFKA_HOST, self.KAFKA_PORT
+                    ),
+                    value_serializer=lambda v: json.dumps(v).encode('utf-8'),
+                    retries=5
+                )
+                break
+            except NoBrokersAvailable:
+                self.stdout.write(
+                    self.style.WARNING('WARNING: Kafka broker not available'))
+                time.sleep(5)
+
+        self.stdout.write(self.style.SUCCESS('INFO: Brokers subscribed'))
         client.disconnect()
         asyncio.run(self.mqtt_broker())

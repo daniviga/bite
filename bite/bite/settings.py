@@ -151,11 +151,20 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = '/srv/appdata/bite/static'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': []
+}
+
 SKIP_WHITELIST = True
 
 MQTT_BROKER = {
     'HOST': 'broker',
     'PORT': '1883',
+}
+
+KAFKA_BROKER = {
+    'HOST': 'kafka',
+    'PORT': '9092',
 }
 
 # If no local_settings.py is availble in the current folder let's try to
