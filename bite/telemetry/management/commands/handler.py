@@ -55,10 +55,11 @@ class Command(BaseCommand):
             try:
                 consumer = KafkaConsumer(
                     "telemetry",
-                    value_deserializer=lambda m: json.loads(m.decode('utf8')),
                     bootstrap_servers='{}:{}'.format(
                         self.KAFKA_HOST, self.KAFKA_PORT
                     ),
+                    group_id="handler",
+                    value_deserializer=lambda m: json.loads(m.decode('utf8')),
                 )
                 break
             except NoBrokersAvailable:

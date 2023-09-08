@@ -17,20 +17,20 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FROM python:3.9-alpine AS builder
+FROM python:3.11-alpine AS builder
 RUN apk update && apk add gcc musl-dev postgresql-dev \
         && pip install psycopg2-binary
 
 # ---
 
-FROM python:3.9-alpine
+FROM python:3.11-alpine
 ENV PYTHONUNBUFFERED 1
 ENV DJANGO_SETTINGS_MODULE "bite.settings"
 
 RUN apk update && apk add --no-cache postgresql-libs \
-        && wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-alpine-linux-amd64-v0.6.1.tar.gz -qO- \
+        && wget https://github.com/jwilder/dockerize/releases/download/v0.7.0/dockerize-alpine-linux-amd64-v0.7.0.tar.gz -qO- \
         | tar -xz -C /usr/local/bin
-COPY --from=builder /usr/local/lib/python3.9/site-packages/ /usr/local/lib/python3.9/site-packages/
+COPY --from=builder /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
 COPY --chown=1000:1000 requirements.txt /srv/app/bite/requirements.txt
 RUN pip3 install --no-cache-dir -r /srv/app/bite/requirements.txt
 

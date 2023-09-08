@@ -94,7 +94,7 @@ def main():
     parser.add_argument('-s', '--serial',
                         default=os.environ.get('IOT_SERIAL'),
                         help='IoT device serial number')
-    parser.add_argument('-d', '--delay', metavar='s', type=int,
+    parser.add_argument('-d', '--delay', metavar='s', type=float,
                         default=os.environ.get('IOT_DELAY', 10),
                         help='Delay between requests')
     args = parser.parse_args()

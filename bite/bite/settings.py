@@ -151,6 +151,10 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = '/srv/appdata/bite/static'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': []
+}
+
 SKIP_WHITELIST = True
 
 MQTT_BROKER = {
