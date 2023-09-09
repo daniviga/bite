@@ -43,7 +43,7 @@ services:
 
   timescale:
     <<: *service_default
-    image: timescale/timescaledb:latest-pg12
+    image: timescale/timescaledb:latest-pg15
     environment:
       POSTGRES_USER: "bite"
       POSTGRES_PASSWORD: "password"
@@ -96,7 +96,6 @@ services:
     volumes:
       - staticdata:/srv/appdata/bite/static
       - ./ingress/nginx.conf:/etc/nginx/nginx.conf
-
 
   bite:
     <<: *service_default
