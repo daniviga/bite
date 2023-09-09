@@ -1,0 +1,20 @@
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'bite',
+        'USER': 'bite',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+
+MQTT_BROKER = {
+    'HOST': 'localhost',
+    'PORT': '1883',
+}
+
+KAFKA_BROKER = {
+    'HOST': 'localhost',
+    'PORT': '29092',
+}

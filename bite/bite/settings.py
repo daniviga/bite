@@ -61,7 +61,7 @@ INSTALLED_APPS = [
     # 'health_check.storage',
     'rest_framework',
     'bite',
-    'api',
+    'dps',
     'telemetry',
 ]
 
@@ -167,11 +167,12 @@ KAFKA_BROKER = {
     'PORT': '9092',
 }
 
-# If no local_settings.py is availble in the current folder let's try to
-# load it from the application root
+try:
+    from bite.local_settings import *
+except ImportError:
+    pass
+
 try:
     from bite.production import *
 except ImportError:
-    # If a local_setting.py does not exist
-    # settings in this file only will be used
     pass

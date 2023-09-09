@@ -21,7 +21,7 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
 
-from api.models import Device
+from dps.models import Device
 
 
 def telemetry_validation(value):

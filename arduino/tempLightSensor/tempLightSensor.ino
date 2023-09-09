@@ -55,7 +55,7 @@ struct netConfig {
 } config;
 
 char serial[9];
-const String apiURL = "/api/device/subscribe/";
+const String dpsURL = "/dps/device/subscribe/";
 const String telemetryURL = "/telemetry/";
 
 void setup(void) {
@@ -63,7 +63,7 @@ void setup(void) {
 
   analogReference(EXTERNAL);
 
-  StaticJsonDocument<20> api;
+  StaticJsonDocument<20> dps;
 
   byte mac[6];
   int eeAddress = 0;
@@ -110,8 +110,8 @@ void setup(void) {
   Serial.println("DEBUG: clock updated via NTP.");
 #endif
 
-  api["serial"] = serial;
-  postData(config, apiURL, api);
+  dps["serial"] = serial;
+  postData(config, dpsURL, dps);
 
   telemetry["device"] = serial;
   // payload["id"] = serverName;

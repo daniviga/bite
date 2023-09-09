@@ -33,13 +33,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from api.views import APISubscribe
+from dps.views import DPS
 
 urlpatterns = [
-    path('device/subscribe/',
-         APISubscribe.as_view({'post': 'create'}),
-         name='device-subscribe'),
+    path('device/provision/',
+         DPS.as_view({'post': 'create'}),
+         name='device-provision'),
     path('device/list/',
-         APISubscribe.as_view({'get': 'list'}),
+         DPS.as_view({'get': 'list'}),
          name='device-list'),
 ]
