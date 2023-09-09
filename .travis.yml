@@ -11,12 +11,12 @@ before_install:
 _iot-simulator: &iot-simulator
     stage: simulator
     install:
-      - docker-compose -f docker/docker-compose.yml pull
+      - docker-compose -f docker/docker-compose.yml pull -q
       - docker-compose -f docker/docker-compose.yml build
     before_script:
       - docker-compose -f docker/docker-compose.yml -f docker/edge/docker-compose.edge.yml up -d
       - sleep 30  # warm-up
-      - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/edge/docker-compose.modules.yml pull
+      - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/edge/docker-compose.modules.yml pull -q
       - DOCKER_HOST='127.0.0.1:22375' docker-compose -f docker/edge/docker-compose.modules.yml build
     script:
       - sleep 5  # warm-up
@@ -37,7 +37,7 @@ jobs:
     if: branch = master
   - stage: django
     install:
-      - docker-compose -f docker/docker-compose.yml pull
+      - docker-compose -f docker/docker-compose.yml pull -q
       - docker-compose -f docker/docker-compose.yml build
     before_script:
       - docker-compose -f docker/docker-compose.yml up -d
