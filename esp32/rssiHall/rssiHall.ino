@@ -55,13 +55,13 @@ struct netConfig {
 } config;
 
 char* serial;
-const String apiURL = "/api/device/subscribe/";
+const String dpsURL = "/dps/device/subscribe/";
 const String telemetryURL = "/telemetry/";
 
 void setup(void) {
   Serial.begin(115200);
 
-  StaticJsonDocument<64> api;
+  StaticJsonDocument<64> dps;
 
   preferences.begin("iot");
   // Get the serial number from flash
@@ -117,8 +117,8 @@ void setup(void) {
   Serial.println("DEBUG: clock updated via NTP.");
 #endif
 
-  api["serial"] = serial;
-  postData(config, apiURL, api);
+  dps["serial"] = serial;
+  postData(config, dpsURL, dps);
 
   telemetry["device"] = serial;
   // payload["id"] = serverName;
