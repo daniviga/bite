@@ -31,10 +31,10 @@ from telemetry.models import Telemetry
 
 
 class Command(BaseCommand):
-    help = 'MQTT to DB deamon'
+    help = "Telemetry handler"
 
-    KAFKA_HOST = settings.KAFKA_BROKER['HOST']
-    KAFKA_PORT = int(settings.KAFKA_BROKER['PORT'])
+    KAFKA_HOST = settings.KAFKA_BROKER["HOST"]
+    KAFKA_PORT = int(settings.KAFKA_BROKER["PORT"])
 
     def get_device(self, serial):
         try:
@@ -47,7 +47,7 @@ class Command(BaseCommand):
             transport=transport,
             device=self.get_device(message["device"]),
             clock=message["clock"],
-            payload=message["payload"]
+            payload=message["payload"],
         )
 
     def handle(self, *args, **options):
@@ -55,22 +55,22 @@ class Command(BaseCommand):
             try:
                 consumer = KafkaConsumer(
                     "telemetry",
-                    bootstrap_servers='{}:{}'.format(
+                    bootstrap_servers="{}:{}".format(
                         self.KAFKA_HOST, self.KAFKA_PORT
                     ),
                     group_id="handler",
-                    value_deserializer=lambda m: json.loads(m.decode('utf8')),
+                    value_deserializer=lambda m: json.loads(m.decode("utf8")),
                 )
                 break
             except NoBrokersAvailable:
                 self.stdout.write(
-                    self.style.WARNING('WARNING: Kafka broker not available'))
+                    self.style.WARNING("WARNING: Kafka broker not available")
+                )
                 time.sleep(5)
 
-        self.stdout.write(self.style.SUCCESS('INFO: Kafka broker subscribed'))
+        self.stdout.write(self.style.SUCCESS("INFO: Kafka broker subscribed"))
         for message in consumer:
             self.store_telemetry(
-                message.value["transport"],
-                message.value["body"]
+                message.value["transport"], message.value["body"]
             )
         consumer.unsuscribe()

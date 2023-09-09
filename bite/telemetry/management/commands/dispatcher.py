@@ -35,12 +35,12 @@ from api.models import Device
 
 
 class Command(BaseCommand):
-    help = 'MQTT to DB deamon'
+    help = "Telemetry dispatcher"
 
-    MQTT_HOST = settings.MQTT_BROKER['HOST']
-    MQTT_PORT = int(settings.MQTT_BROKER['PORT'])
-    KAFKA_HOST = settings.KAFKA_BROKER['HOST']
-    KAFKA_PORT = int(settings.KAFKA_BROKER['PORT'])
+    MQTT_HOST = settings.MQTT_BROKER["HOST"]
+    MQTT_PORT = int(settings.MQTT_BROKER["PORT"])
+    KAFKA_HOST = settings.KAFKA_BROKER["HOST"]
+    KAFKA_PORT = int(settings.KAFKA_BROKER["PORT"])
     producer = None
 
     @sync_to_async
@@ -52,10 +52,7 @@ class Command(BaseCommand):
 
     @sync_to_async
     def dispatch(self, message):
-        self.producer.send(
-            'telemetry', {"transport": 'mqtt',
-                          "body": message}
-        )
+        self.producer.send("telemetry", {"transport": "mqtt", "body": message})
 
     async def mqtt_broker(self):
         async with Client(self.MQTT_HOST, port=self.MQTT_PORT) as client:
@@ -66,12 +63,13 @@ class Command(BaseCommand):
                     device = await self.get_device(message.topic)
                     if device is not None:
                         message_body = json.loads(
-                            message.payload.decode('utf-8'))
+                            message.payload.decode("utf-8")
+                        )
                         await self.dispatch(message_body)
                     else:
                         self.stdout.write(
-                            self.style.ERROR(
-                                'DEBUG: message discarded'))
+                            self.style.ERROR("DEBUG: message discarded")
+                        )
 
     def handle(self, *args, **options):
         client = mqtt.Client()
@@ -81,24 +79,26 @@ class Command(BaseCommand):
                 break
             except (socket.gaierror, ConnectionRefusedError):
                 self.stdout.write(
-                    self.style.WARNING('WARNING: MQTT broker not available'))
+                    self.style.WARNING("WARNING: MQTT broker not available")
+                )
                 time.sleep(5)
 
         while True:
             try:
                 self.producer = KafkaProducer(
-                    bootstrap_servers='{}:{}'.format(
+                    bootstrap_servers="{}:{}".format(
                         self.KAFKA_HOST, self.KAFKA_PORT
                     ),
-                    value_serializer=lambda v: json.dumps(v).encode('utf-8'),
-                    retries=5
+                    value_serializer=lambda v: json.dumps(v).encode("utf-8"),
+                    retries=5,
                 )
                 break
             except NoBrokersAvailable:
                 self.stdout.write(
-                    self.style.WARNING('WARNING: Kafka broker not available'))
+                    self.style.WARNING("WARNING: Kafka broker not available")
+                )
                 time.sleep(5)
 
-        self.stdout.write(self.style.SUCCESS('INFO: Brokers subscribed'))
+        self.stdout.write(self.style.SUCCESS("INFO: Brokers subscribed"))
         client.disconnect()
         asyncio.run(self.mqtt_broker())
