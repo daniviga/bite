@@ -36,6 +36,13 @@ services:
     ports:
         - "${CUSTOM_DOCKER_IP:-0.0.0.0}:8000:8000"
 
+  kafka:
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+    ports:
+        - "${CUSTOM_DOCKER_IP:-0.0.0.0}:29092:29092"
+
   data-migration:
     volumes:
       - ../bite:/srv/app/bite
@@ -44,6 +51,10 @@ services:
     volumes:
       - ../bite:/srv/app/bite
 
-  mqtt-to-db:
+  dispatcher:
+    volumes:
+      - ../bite:/srv/app/bite
+
+  handler:
     volumes:
       - ../bite:/srv/app/bite

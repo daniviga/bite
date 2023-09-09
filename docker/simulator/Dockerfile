@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FROM python:3.9-alpine
+FROM python:3.11-alpine
 
 RUN pip3 install urllib3 paho-mqtt
 COPY ./device_simulator.py /opt/bite/device_simulator.py

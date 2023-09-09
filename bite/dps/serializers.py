@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from rest_framework import serializers
-from api.models import Device, device_validation
+from dps.models import Device, device_validation
 
 
 class DeviceSerializer(serializers.ModelSerializer):
