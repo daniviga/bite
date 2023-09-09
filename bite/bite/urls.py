@@ -37,13 +37,13 @@ from django.contrib import admin
 from django.conf import settings
 from django.urls import include, path
 
-from api import urls as api_urls
+from dps import urls as dps_urls
 from telemetry import urls as telemetry_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('ht/', include('health_check.urls')),
-    path('api/', include(api_urls)),
+    path('dps/', include(dps_urls)),
     path('telemetry/', include(telemetry_urls)),
 ]
 

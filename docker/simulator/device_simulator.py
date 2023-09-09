@@ -114,7 +114,7 @@ def main():
     )
     args = parser.parse_args()
 
-    dps = "/api/device/provision/"
+    dps = "/dps/device/provision/"
     telemetry = "/telemetry/"
 
     if args.serial is None:

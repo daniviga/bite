@@ -33,7 +33,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from api.views import DPS
+from dps.views import DPS
 
 urlpatterns = [
     path('device/provision/',

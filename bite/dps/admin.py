@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.contrib import admin
-from api.models import Device, WhiteList
+from dps.models import Device, WhiteList
 
 
 @admin.register(Device)

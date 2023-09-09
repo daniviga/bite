@@ -19,8 +19,8 @@
 
 from rest_framework.viewsets import ModelViewSet
 
-from api.models import Device
-from api.serializers import DeviceSerializer
+from dps.models import Device
+from dps.serializers import DeviceSerializer
 
 
 class DPS(ModelViewSet):

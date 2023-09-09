@@ -19,7 +19,7 @@
 
 import json
 from django.test import TestCase, Client
-from api.models import Device, WhiteList
+from dps.models import Device, WhiteList
 
 
 class ApiTestCase(TestCase):

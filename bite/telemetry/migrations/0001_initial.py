@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('api', '0001_initial'),
+        ('dps', '0001_initial'),
     ]
 
     operations = [
@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('transport', models.CharField(choices=[('http', 'http'), ('mqtt', 'mqtt')], default='http', max_length=4)),
                 ('clock', models.IntegerField(null=True, validators=[django.core.validators.MinValueValidator(0)])),
                 ('payload', models.JSONField(validators=[telemetry.models.telemetry_validation])),
-                ('device', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.device')),
+                ('device', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dps.device')),
             ],
             options={
                 'verbose_name_plural': 'Telemetry',

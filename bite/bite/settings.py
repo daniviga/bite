@@ -61,7 +61,7 @@ INSTALLED_APPS = [
     # 'health_check.storage',
     'rest_framework',
     'bite',
-    'api',
+    'dps',
     'telemetry',
 ]
 

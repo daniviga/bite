@@ -26,7 +26,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 
-from api.models import Device
+from dps.models import Device
 from telemetry.models import Telemetry
 
 

@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.test import TestCase, Client
-from api.models import Device, WhiteList
+from dps.models import Device, WhiteList
 
 
 class DPSTestCase(TestCase):
@@ -29,17 +29,17 @@ class DPSTestCase(TestCase):
         Device.objects.create(serial='test1234')
 
     def test_no_whitelist(self):
-        response = self.c.post('/api/device/provision/',
+        response = self.c.post('/dps/device/provision/',
                                {'serial': 'test12345'})
         self.assertEqual(response.status_code, 400)
 
     def test_provision_post(self):
         WhiteList.objects.create(serial='test12345')
-        response = self.c.post('/api/device/provision/',
+        response = self.c.post('/dps/device/provision/',
                                {'serial': 'test12345'})
         self.assertEqual(response.status_code, 201)
 
     def test_provision_get(self):
-        response = self.c.get('/api/device/list/')
+        response = self.c.get('/dps/device/list/')
         self.assertEqual(
             response.json()[0]['serial'], 'test1234')
