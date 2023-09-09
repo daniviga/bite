@@ -23,6 +23,6 @@ from api.models import Device
 from api.serializers import DeviceSerializer
 
 
-class APISubscribe(ModelViewSet):
+class DPS(ModelViewSet):
     queryset = Device.objects.all()
     serializer_class = DeviceSerializer

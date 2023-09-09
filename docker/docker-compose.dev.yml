@@ -37,8 +37,11 @@ services:
         - "${CUSTOM_DOCKER_IP:-0.0.0.0}:8000:8000"
 
   kafka:
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
     ports:
-        - "${CUSTOM_DOCKER_IP:-0.0.0.0}:9092:9092"
+        - "${CUSTOM_DOCKER_IP:-0.0.0.0}:29092:29092"
 
   data-migration:
     volumes:

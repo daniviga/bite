@@ -21,7 +21,7 @@ from django.test import TestCase, Client
 from api.models import Device, WhiteList
 
 
-class ApiTestCase(TestCase):
+class DPSTestCase(TestCase):
     c = Client()
 
     def setUp(self):
@@ -29,17 +29,17 @@ class ApiTestCase(TestCase):
         Device.objects.create(serial='test1234')
 
     def test_no_whitelist(self):
-        response = self.c.post('/api/device/subscribe/',
+        response = self.c.post('/api/device/provision/',
                                {'serial': 'test12345'})
         self.assertEqual(response.status_code, 400)
 
-    def test_subscribe_post(self):
+    def test_provision_post(self):
         WhiteList.objects.create(serial='test12345')
-        response = self.c.post('/api/device/subscribe/',
+        response = self.c.post('/api/device/provision/',
                                {'serial': 'test12345'})
         self.assertEqual(response.status_code, 201)
 
-    def test_subscribe_get(self):
+    def test_provision_get(self):
         response = self.c.get('/api/device/list/')
         self.assertEqual(
             response.json()[0]['serial'], 'test1234')

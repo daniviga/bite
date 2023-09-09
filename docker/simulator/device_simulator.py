@@ -114,7 +114,7 @@ def main():
     )
     args = parser.parse_args()
 
-    subscribe = "/api/device/subscribe/"
+    dps = "/api/device/provision/"
     telemetry = "/telemetry/"
 
     if args.serial is None:
@@ -123,7 +123,7 @@ def main():
         )
 
     data = {"serial": args.serial}
-    post_json(args.endpoint, subscribe, data)
+    post_json(args.endpoint, dps, data)
 
     while True:
         data = {
