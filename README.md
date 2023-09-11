@@ -52,7 +52,7 @@ safe configuration (see https://github.com/docker/compose/issues/2999).
 
 ```bash
 docker-compose -f docker/docker-compose.yml build
-docker-compose -f docker/docker-compose.yml up -d [--scale {bite,mqtt-to-db)=N]
+docker-compose -f docker/docker-compose.yml up -d [--scale {bite,dispatcher)=N]
 ```
 It exposes:
 
@@ -72,8 +72,10 @@ It exposes:
 
 - `http://localhost:80` (HTTP and MQTT over Websockets)
 - `http://localhost:8080` (Django's `runserver`)
-- `tcp://localhost:1883` (MQTT)
-- `tcp://localhost:9001` (MQTT over Websockets)
+- `tcp://localhost:1883` (MQTT via Nginx streams)
+- `tcp://localhost:18883` (MQTT via Mosquitto)
+- `tcp://localhost:9001` (MQTT over Websockets via Mosquitto)
+- `tcp://localhost:29092` (Kafka)
 - `udp://localhost:123` (NTP)
 - `tcp://localhost:5432` (PostgreSQL/Timescale)
 
@@ -95,13 +97,6 @@ Django runs with `DEBUG = False` and `SKIP_WHITELIST = False`
 ## Extra features
 
 The project provides multiple modules that can be combined with the fore-mentioned configurations.
-
-### Traefik
-
-To use [Traefik](https://containo.us/traefik/) instead of Nginx use:
-```bash
-docker-compose -f docker/docker-compose.yml up -f docker/ingress/docker-compose.traefik.yml -d
-```
 
 ### VerneMQ
 

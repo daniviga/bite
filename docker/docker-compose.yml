@@ -59,8 +59,6 @@ services:
       - "./mqtt/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf"
     networks:
       - net
-    ports:
-      - "${CUSTOM_DOCKER_IP:-0.0.0.0}:1883:1883"
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -91,6 +89,7 @@ services:
       NGINX_ENTRYPOINT_QUIET_LOGS: 1
     ports:
       - "${CUSTOM_DOCKER_IP:-0.0.0.0}:80:80"
+      - "${CUSTOM_DOCKER_IP:-0.0.0.0}:1883:1883"
     networks:
       - net
     volumes:

@@ -26,7 +26,7 @@ services:
 
   broker:
     ports:
-        - "${CUSTOM_DOCKER_IP:-0.0.0.0}:1883:1883"
+        - "${CUSTOM_DOCKER_IP:-0.0.0.0}:18883:1883"
         - "${CUSTOM_DOCKER_IP:-0.0.0.0}:9001:9001"
 
   bite:
